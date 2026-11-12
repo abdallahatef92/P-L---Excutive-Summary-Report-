@@ -30,6 +30,7 @@ This writes `docs/index.html`, the single self-contained file (pdf.js, ExcelJS a
 | `src/app.html` | The app: layout, PDF parsing, rendering, print and Excel export |
 | `src/build.js` | Inlines the libraries and logo into one HTML file |
 | `lib/` | pdf.js 3.11.174, ExcelJS 4.4.0, company logo |
+| `docs/manifest.webmanifest`, `docs/sw.js`, `docs/icon-*.png` | Makes the site installable and keeps it working offline |
 | `docs/index.html` | Built output served by GitHub Pages (branch `main`, folder `/docs`) |
 
 Commit the rebuilt `docs/index.html` after every change to `src/`.
