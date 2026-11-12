@@ -2,7 +2,7 @@
   "name": "Project Reports",
   "short_name": "Project Reports",
   "description": "P&L and Executive Summary reports, portfolio and checks, from the monthly PDFs",
-  "id": "./",
+  "id": "/P-L---Excutive-Summary-Report-/docs/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
