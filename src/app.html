@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Reports — P&amp;L and Executive Summary</title>
+<style>
+:root{
+  --navy:#0f2247; --navy2:#1b3566; --ink:#16202f; --muted:#64708a; --line:#dfe4ee;
+  --bg:#f3f5f9; --card:#ffffff; --accent:#1f57c3; --soft:#eaf0fb;
+  --good:#12805c; --goodbg:#e2f5ec; --bad:#c0392b; --badbg:#fbe6e3; --warn:#a56a00; --warnbg:#fdf1d6;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",Tahoma,Arial,sans-serif}
+.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+aside{background:var(--navy);color:#fff;padding:18px 14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font-size:16px;font-weight:700;letter-spacing:.3px}
+.brand small{display:block;font-weight:400;font-size:12px;color:#aab8d6;margin-top:2px}
+.drop{border:1.5px dashed #5c75a8;border-radius:10px;padding:14px 10px;text-align:center;font-size:12.5px;color:#cfd9ee;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{background:#1b3566;border-color:#9db4e6;color:#fff}
+.drop b{display:block;font-size:13.5px;color:#fff;margin-bottom:3px}
+.plabel{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8fa2c9;margin:4px 4px -6px}
+.plist{display:flex;flex-direction:column;gap:6px}
+.pitem{border:1px solid transparent;border-radius:9px;padding:9px 10px;cursor:pointer;background:#162d5a}
+.pitem:hover{background:#1e3a72}
+.pitem.sel{background:#fff;color:var(--ink)}
+.pitem .n{font-weight:600;display:flex;align-items:center;gap:7px}
+.pitem .s{font-size:12px;color:#a9b8d8;margin-top:2px;display:flex;justify-content:space-between;gap:6px}
+.pitem.sel .s{color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:#8493b3;flex:none}
+.dot.good{background:#2fc28a}.dot.bad{background:#ff6b5a}
+.tag{font-size:10px;font-weight:700;border-radius:4px;padding:1px 5px;background:#2b4680;color:#d6e0f5;margin-left:3px}
+.tag.off{opacity:.35}
+.rm{border:0;background:none;color:inherit;opacity:.45;font-size:17px;line-height:1;padding:0 2px;margin-left:4px;cursor:pointer;border-radius:4px}
+.rm:hover{opacity:1;background:#c0392b;color:#fff}
+.pitem.sel .tag{background:var(--soft);color:var(--accent)}
+.side-foot{margin-top:auto;display:flex;gap:8px}
+.btn{border:1px solid #47609a;background:transparent;color:#dbe4f7;border-radius:7px;padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+.btn:hover{background:#1e3a72}
+main{padding:22px 28px 60px;min-width:0}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:24px;margin:0;color:var(--navy)}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:18px}
+.tab{padding:9px 18px;font-weight:600;color:var(--muted);cursor:pointer;border:0;background:none;font:inherit;font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--navy);border-bottom-color:var(--accent)}
+.printbtn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:7px;padding:7px 12px;font:inherit;cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.kpi .v{font-size:20px;font-weight:700;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums}
+.kpi .x{font-size:12px;color:var(--muted);margin-top:1px}
+.kpi.good{background:var(--goodbg);border-color:#bfe6d3}.kpi.good .v{color:var(--good)}
+.kpi.bad{background:var(--badbg);border-color:#f3c5bf}.kpi.bad .v{color:var(--bad)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card h3{margin:0;padding:9px 14px;background:var(--navy);color:#fff;font-size:13px;letter-spacing:.4px}
+table{width:100%;border-collapse:collapse}
+td,th{padding:6px 14px;border-bottom:1px solid #edf0f6;text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:#f7f9fc;font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.num{font-weight:600}
+.neg{color:var(--bad)} .pos{color:var(--good)}
+tr.total td{background:var(--soft);font-weight:700}
+tr.grp td{background:#f7f9fc;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+.badge{display:inline-block;border-radius:20px;padding:2px 10px;font-weight:700;font-size:12px}
+.badge.good{background:var(--goodbg);color:var(--good)}.badge.bad{background:var(--badbg);color:var(--bad)}.badge.warn{background:var(--warnbg);color:var(--warn)}
+.cpi{display:inline-block;min-width:54px;text-align:center;border-radius:5px;padding:1px 6px}
+.empty{background:var(--card);border:1px dashed #c3ccdd;border-radius:12px;padding:44px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--navy);font-size:17px;margin-bottom:6px}
+.link{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
+select{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.msgs{margin-bottom:12px;display:flex;flex-direction:column;gap:6px}
+.msg{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:8px 12px;font-size:13px}
+.mt{margin-top:14px}
+.scroll{overflow-x:auto}
+@media (max-width:800px){.app{grid-template-columns:1fr}aside{position:static;height:auto}}
+@media print{
+  aside,.tabs,.printbtn,.link,.msgs{display:none!important}
+  .app{display:block} main{padding:0} body{background:#fff}
+  .card,.kpi{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ===== report sheets (follow the original PDF formatting) ===== */
+.sheetwrap{overflow-x:auto;padding-bottom:6px}
+.sheet{background:#fff;box-shadow:0 2px 14px rgba(15,34,71,.14);border:1px solid #d5dbe7;margin:0 auto;color:#000}
+.sheet td,.sheet th{border-bottom:0;padding:0;vertical-align:middle;background:none;text-transform:none;letter-spacing:0;color:inherit;font-size:inherit}
+.r{text-align:right}
+/* P&L */
+.sheet.pl{width:800px;max-width:100%;padding:36px 62px 50px}
+.shead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:0 -40px 44px;font-family:Arial,Helvetica,sans-serif}
+.shead .co{font-size:11px;font-weight:700;line-height:1.35}
+.shead .ttl{font-size:19px;font-weight:700}
+.logo{justify-self:end}
+.logo img{height:64px;display:block}
+.logo b{display:block;font-size:13px;letter-spacing:1px;margin-top:2px}
+.logo small{display:block;font-size:6.5px;letter-spacing:1px;color:#555;margin-top:2px}
+.plt{border:2px solid #000;font-family:"Times New Roman",Times,serif;font-size:15px;table-layout:fixed}
+.sheet .plt td{border:1px solid #000;padding:1px 3px;font-weight:700;line-height:1.18;background:#fff}
+.sheet .plt td.v{text-align:center;font-weight:400;background:#f2f2f2}
+.sheet .plt tr.hdr td{background:#0c1f5c;color:#fff;font-size:16px;padding:5px 3px;border-color:#000}
+.sheet .plt tr.hdr td.v{font-weight:700}
+.sheet .plt tr.big td{font-size:16px;padding:6px 3px;background:#f2f2f2}
+.sheet .plt tr.big td.v{font-weight:700}
+.sheet .plt tr.vb td.v{color:#1b4aa0;font-weight:700}
+.sheet .plt tr.vl td.v{color:#1b4aa0}
+.sheet .plt tr.vk td.v{font-weight:700}
+.sheet .plt tr.yl td.v{background:#fff2cc}
+.sheet .plt tr.gr td.v{background:#a9e3b4}
+.sheet .plt tr.top td{border-top:3px solid #000}
+.plt2{margin-top:18px}
+.sheet .plt tr.st td.v{color:#fff;font-weight:400}
+.sheet .plt tr.st.bad td.v{background:#d0432a}
+.sheet .plt tr.st.good td.v{background:#2e9e5b}
+.sheet .plt tr.st.warn td.v{background:#d99a1c}
+/* Executive summary */
+.sheet.ex{width:1240px;padding:26px 60px 34px;font-family:Arial,Helvetica,sans-serif;font-size:11.5px}
+.rule2{height:2px;background:linear-gradient(90deg,#000 0 32%,transparent 32% 46%,#000 46%);margin-bottom:12px}
+.rule1{height:1.5px;background:#000;margin:14px 0 22px}
+.gtitle{display:inline-block;min-width:180px;border-bottom:1px solid #000;padding-bottom:3px;margin-bottom:8px}
+.gtitle.lg{min-width:0;margin:7px 0 6px}
+.bar{height:6px;background:#b4c7e7;margin:2px 0}
+.gi{margin:6px 0;table-layout:fixed}
+.sheet .gi td{padding:5px 0;height:20px}
+.sheet .gi td.u{border-bottom:1px solid #000;text-align:right}
+.sheet .gi td:nth-child(3),.sheet .gi td:nth-child(5),.sheet .gi td:nth-child(7){padding-left:20px}
+.sheet .gi tr:not(:first-child) td:nth-child(6){padding-left:20px}
+.gi .pn{vertical-align:top!important;padding-left:20px!important}
+.m{display:flex;justify-content:space-between;gap:10px}
+.m i{font-style:normal}
+.two{display:grid;grid-template-columns:46% 1fr;gap:22px;margin-top:8px}
+.sec{border-collapse:collapse;width:100%;table-layout:fixed}
+.two>*{min-width:0}
+.sheet .sec td.val,.sheet .sec th.bx{padding-left:18px}
+.sheet .sec td:first-child,.sheet .sec th.st{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet .sec th.st{text-align:left;font-weight:700}
+.sheet .sec .box,.sheet .dvt tr.dh th{background:#adb9ca;border:1.5px solid #1f2a44;text-align:center;font-weight:400;padding:1px 4px}
+.sheet .sec td{padding-top:2px;vertical-align:bottom}
+.sheet .sec td:first-child{padding-bottom:3px}
+.f,.f0{height:8px;line-height:8px;font-size:6.5px;text-align:center;color:#fff}
+.f{background:#8497b0}
+.uu{border-bottom:1px solid #000;text-align:right;padding:3px 0 2px;min-height:19px}
+.dvt{border-collapse:separate;border-spacing:18px 0;margin:0 -18px;width:calc(100% + 36px);table-layout:fixed}
+.sheet .dvt tr.dh th{font-weight:700;font-size:12px;padding:9px 4px;border-width:2px}
+.sheet .dvt td{padding-top:1px;vertical-align:bottom}
+.dn{border-bottom:1px solid #000!important;padding:4px 0 3px!important;white-space:normal;overflow-wrap:anywhere}
+.dc{display:inline-block;width:26px;margin-left:-22px;margin-right:4px;text-align:right}
+.dvt .dn{padding-left:22px!important}
+.dd{border-bottom:1px solid #000;padding:4px 0 3px}
+.sheet .dvt tr.dt td{padding-top:12px}
+.dvt tr.dt .dn,.dvt tr.dt .dd{border:2px solid #1f2a44!important;background:#adb9ca;font-weight:700;font-size:12px;padding:3px 6px!important}
+.dvt tr.dt .dn{padding-left:8px!important}
+.sheet .dvt tr.gap td{padding-top:14px}
+.dvt tr.gap .dn{position:relative}
+.bot{display:grid;grid-template-columns:61% 1fr;gap:26px;margin:8px 0;align-items:center}
+.bt{table-layout:fixed}
+.sheet .bt td{padding:5px 0;font-weight:700}
+.sheet .bt td:first-child{width:28%;padding-right:10px}
+.sheet .bt.b2 td:first-child{width:45%}
+.red{color:#c00000}
+.sheet .bt td.u2{border-bottom:1px solid #000}
+.sheet .leg td{padding:5px 0}
+.sheet .leg td:nth-child(1){width:17%}.sheet .leg td:nth-child(2){width:46%}.sheet .leg td:nth-child(3){width:17%}
+@media print{
+  .sheet{box-shadow:none;border:0;margin:0}
+  .sheetwrap{overflow:visible}
+  main{padding:0!important}
+  .head{display:none!important}
+}
+/* compact executive sheet so it keeps the A3 landscape proportion */
+.sheet.ex{line-height:1.15;padding:22px 56px 24px}
+.sheet.ex .gi td{padding-top:3px;padding-bottom:3px;height:auto}
+.sheet.ex .uu{padding:2px 0 1px;min-height:16px}
+.sheet.ex .f,.sheet.ex .f0{height:7px;line-height:7px}
+.sheet.ex .sec td{padding-top:1px}
+.sheet.ex .two{margin-top:5px}
+.sheet.ex .rule1{margin:8px 0 10px}
+.sheet.ex .dn,.sheet.ex .dd{padding-top:2px!important;padding-bottom:1px!important}
+.sheet.ex .dvt tr.dh th{padding:7px 4px}
+.sheet.ex .dvt tr.dt td{padding-top:7px}
+.sheet.ex .dvt tr.gap td{padding-top:9px}
+.sheet.ex .bot{margin:4px 0}
+.sheet.ex .bt td{padding:3px 0}
+.sheet.ex .leg td{padding:3px 0}
+.sheet.ex .gtitle{margin-bottom:5px}
+.sheet.ex .gtitle.lg{margin:4px 0 3px}
+/* ===== top bar layout ===== */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--navy);color:#fff;padding:9px 20px;box-shadow:0 2px 10px rgba(15,34,71,.25)}
+.topbar .brand{font-size:16px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.psel{display:flex;align-items:center;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8fa2c9}
+.psel select{min-width:230px;max-width:46vw;font:inherit;font-size:14.5px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--navy);background:#fff;border:0;border-radius:7px;padding:7px 10px;cursor:pointer}
+.psel select:disabled{opacity:.6;cursor:default}
+.ttabs{display:flex;gap:4px;background:#162d5a;border-radius:9px;padding:3px}
+.topbar .tab{padding:6px 14px;border:0;border-radius:7px;margin:0;color:#b9c6e2;font-size:13.5px}
+.topbar .tab:hover{color:#fff}
+.topbar .tab.on{background:#fff;color:var(--navy)}
+.pmeta{font-size:12.5px;color:#b9c6e2;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.grow{flex:1}
+.ibtn{width:36px;height:36px;display:grid;place-items:center;border:1px solid #47609a;border-radius:8px;background:transparent;color:#dbe4f7;cursor:pointer}
+.ibtn:hover{background:#1e3a72;color:#fff}
+body.editing #edit{background:#fff;color:var(--navy);border-color:#fff}
+main{padding:22px 24px 60px}
+aside{position:fixed;top:0;right:0;left:auto;width:330px;max-width:92vw;height:100vh;z-index:40;transform:translateX(105%);transition:transform .2s ease;box-shadow:-8px 0 30px rgba(0,0,0,.3)}
+body.editing aside{transform:none}
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(10,20,45,.4);display:none}
+body.editing .scrim{display:block}
+.phead{display:flex;align-items:center;justify-content:space-between;font-size:15px}
+.pclose{border:0;background:none;color:#cfd9ee;font-size:24px;line-height:1;cursor:pointer;padding:0 4px;border-radius:5px}
+.pclose:hover{background:#1e3a72;color:#fff}
+.addbtn{margin-top:16px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:9px 18px;cursor:pointer}
+.addbtn:hover{background:#1949a6}
+body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
+@media (max-width:800px){aside{position:fixed;height:100vh}.pmeta{display:none}}
+@media print{.topbar,.scrim{display:none!important}}
+/* ===== print: P&L fills A4 portrait, Executive fills A3 landscape ===== */
+.sheet.pl.pm{width:800px;max-width:none;padding:14px 26px 18px}
+.sheet.pl.pm .shead{margin:0 0 26px}
+.sheet.ex.pm{width:var(--pw,1240px)}
+@media print{
+  .sheet.ex{width:var(--pw,1240px)}
+  html,body{height:auto!important;background:#fff!important}
+  main{padding:8mm!important}
+  .sheetwrap{overflow:visible!important;padding:0!important}
+  .sheet{zoom:var(--pz,1);margin:0 auto!important;border:0!important;box-shadow:none!important}
+  .sheet.pl{width:800px;max-width:none;padding:14px 26px 18px}
+  .sheet.pl .shead{margin:0 0 26px}
+}
+/* ===== portfolio sheet ===== */
+.sheet.pf{width:max-content;min-width:1240px;padding:30px 40px 30px}
+.sheet.pf .shead{margin:0 0 18px}
+.pfdate{font-family:"Times New Roman",Times,serif;font-size:15px;margin-bottom:8px}
+.pft{border:2px solid #000;font-family:"Times New Roman",Times,serif;font-size:13.5px;table-layout:auto}
+.sheet .pft td{white-space:nowrap}
+.sheet .pft td,.sheet .pft th{border:1px solid #000;padding:4px 5px;line-height:1.2}
+.sheet .pft tr.hd th{background:#0c1f5c;color:#fff;font-weight:700;text-align:center;font-size:13px;padding:6px 4px}
+.sheet .pft td{background:#fff}
+.sheet .pft td.v{text-align:right;background:#f2f2f2;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sheet .pft td.c{text-align:center}
+.sheet .pft td.pn{font-weight:700}
+.sheet .pft td.b{font-weight:700;color:#1b4aa0}
+.sheet .pft td.neg{color:#c00000}
+.sheet .pft td.st{text-align:center;color:#fff}
+.sheet .pft td.st.bad{background:#d0432a}.sheet .pft td.st.good{background:#2e9e5b}.sheet .pft td.st.warn{background:#d99a1c}
+.sheet .pft tr[data-k]{cursor:pointer}
+.sheet .pft tr[data-k]:hover td{background:#eaf0fb}
+.sheet .pft tr[data-k]:hover td.st.bad{background:#d0432a}.sheet .pft tr[data-k]:hover td.st.good{background:#2e9e5b}
+.sheet .pft tr.xo td{color:#555;font-style:italic}
+.sheet .pft tr.tot td{border-top:3px solid #000;font-weight:700;background:#dde4f2}
+.pfnote{width:0;min-width:100%;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#444;margin-top:10px;line-height:1.4}
+@media print{.sheet.pf{width:max-content;min-width:1240px}}
+.ckbtn{margin-top:14px;width:100%;padding:10px;border-radius:9px;border:1px dashed #6f86b8;background:transparent;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.ckbtn:hover{background:#1e3a72}
+.sheet .ckt{width:100%}
+.sheet .ckt td.lb{font-weight:700}
+.sheet .ckt td.lb small{display:block;font-weight:400;font-size:11px;color:#555;font-family:Arial,Helvetica,sans-serif}
+.sheet .ckt tr.ph td{background:#dde4f2;font-weight:700;font-size:15px;border-top:3px solid #000;padding:6px}
+.sheet .ckt tr.ph td span{font-weight:400;font-size:13px}
+.sheet .ckt td.st{width:60px}
+.negv{color:#c00000!important}
+</style>
+<style id="pagestyle"></style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Project Reports</div>
+  <label class="psel"><span>Project</span><select id="psel"></select></label>
+  <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button></nav>
+  <span class="grow"></span>
+  <button class="ibtn" id="savecopy" title="Save a copy with the data inside (to send to someone)" aria-label="Save a copy with data"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg></button>
+  <button class="ibtn" id="xlsx" hidden title="Export to Excel (A4, ready to print)" aria-label="Export to Excel"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8l5 8M13 8l-5 8"/><path d="M16 8v8"/></svg></button>
+  <button class="ibtn" id="print" title="Print / Save as PDF" aria-label="Print"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg></button>
+  <button class="ibtn" id="edit" title="Edit projects: add PDFs or remove a project" aria-label="Edit projects"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+</header>
+<div class="scrim" id="scrim"></div>
+<aside id="panel">
+  <div class="phead"><b>Edit projects</b><button class="pclose" id="pclose" title="Close" aria-label="Close">&times;</button></div>
+  <div class="drop" id="drop"><b>Add PDF reports</b>Drop the P&amp;L and Executive Summary PDFs here, or click to choose</div>
+  <input type="file" id="file" accept="application/pdf,.pdf" multiple hidden>
+  <div class="plabel" id="plabel" hidden>Loaded projects</div>
+  <div class="plist" id="plist"></div>
+  <button class="ckbtn" id="ckbtn" hidden>Check P&amp;L vs Executive Summary</button>
+  <div class="side-foot"><button class="btn" id="clear" hidden>Clear all</button></div>
+</aside>
+<main id="main"></main>
+
+<script id="embedded" type="application/json"></script>
+<script>/*__EXCELJS__*/</script>
+<script>/*__PDFJS__*/</script>
+<script>/*__PDFWORKER__*/</script>
+<script>
+"use strict";
+const KEY = "projectReports.v1";
+let state = { pl:{}, ex:{}, sel:null, tab:"pl" };
+let messages = [];
+{
+  let emb = null, ls = null;
+  try { const t = document.getElementById("embedded").textContent.trim(); if (t) emb = JSON.parse(t); } catch(e){}
+  try { ls = JSON.parse(localStorage.getItem(KEY)); } catch(e){}
+  if (emb && emb.pl && emb.ex && !(ls && ls.snap === emb.snap)) state = emb;
+  else if (ls && ls.pl && ls.ex) state = ls;
+}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+function num(s){
+  if (s == null) return NaN;
+  let t = String(s).trim(); if (t === "-" || t === "–") return 0;
+  const neg = /^\(.*\)/.test(t) || /^-/.test(t);
+  t = t.replace(/[^0-9.]/g,""); if (!t) return NaN;
+  const v = parseFloat(t); return neg ? -v : v;
+}
+const isNeg = s => { const v = num(s); return !isNaN(v) && v < 0; };
+const VALUE_RE = /^\(?-?[\d,]*\.?\d+\)?\s*(%|M|m3|m2|ton|kg\/m3|m3\/m2)?$/i;
+const isValue = s => VALUE_RE.test(s) || /^[A-Za-z]{3}-\d{2}$/.test(s) || /^[-–]$/.test(s);
+const isNoise = s => !/\s/.test(s) && !isValue(s) && /^[()A-Za-z0-9.\/*]+$/.test(s) && /[\/()]/.test(s) && s.length <= 18;
+
+/* ---------- PDF text extraction ---------- */
+async function extractItems(buf){
+  const doc = await pdfjsLib.getDocument({ data:new Uint8Array(buf), useWorkerFetch:false, isEvalSupported:false }).promise;
+  const items = [];
+  for (let p = 1; p <= doc.numPages; p++){
+    const page = await doc.getPage(p);
+    const vp = page.getViewport({ scale:1 });
+    const tc = await page.getTextContent();
+    for (const it of tc.items){
+      const s = (it.str||"").replace(/\s+/g," ").trim(); if (!s) continue;
+      const [x, y] = pdfjsLib.Util.transform(vp.transform, it.transform).slice(4);
+      items.push({ s, x, y: y + (p-1)*5000, w: it.width || 0 });
+    }
+  }
+  return items;
+}
+function toRows(items, tol){
+  const sorted = [...items].sort((a,b) => a.y - b.y || a.x - b.x);
+  const rows = []; let cur = null;
+  for (const it of sorted){
+    if (!cur || it.y - cur.y > tol){ cur = { y: it.y, items: [] }; rows.push(cur); }
+    cur.items.push(it);
+  }
+  rows.forEach(r => r.items.sort((a,b) => a.x - b.x));
+  return rows;
+}
+
+/* ---------- P&L parser ---------- */
+function parsePL(items){
+  const rows = [];
+  let started = false;
+  for (const r of toRows(items, 4)){
+    const its = r.items; if (its.length < 2) continue;
+    let gi = -1, gmax = 12;
+    for (let i = 0; i < its.length-1; i++){
+      const g = its[i+1].x - (its[i].x + its[i].w);
+      if (g > gmax){ gmax = g; gi = i; }
+    }
+    if (gi < 0) continue;
+    const label = its.slice(0, gi+1).map(i => i.s).join(" ");
+    const value = its.slice(gi+1).map(i => i.s).join(" ");
+    if (/^report date/i.test(label)) started = true;
+    if (started) rows.push({ label, value });
+  }
+  const get = re => (rows.find(r => re.test(r.label)) || {}).value || "";
+  return { name: get(/^project name/i), client: get(/^client/i), date: get(/^report date/i), rows };
+}
+const plGet = (pl, re) => (pl.rows.find(r => re.test(r.label)) || {}).value || "";
+
+/* ---------- Executive Summary parser ---------- */
+function parseEX(rawItems){
+  const items = rawItems.map(i => ({...i, s: i.s.replace(/\bEGP\b/g,"").replace(/\s+/g," ").trim()}))
+                        .filter(i => i.s && !isNoise(i.s));
+  // stop at the legend
+  const legend = items.find(i => /^legend$/i.test(i.s));
+  const body = legend ? items.filter(i => i.y < legend.y - 2) : items;
+
+  // row -> segments {label, values[]}
+  const segs = [];
+  for (const r of toRows(body, 3.5)){
+    const its = r.items.slice();
+    if (its.length > 1 && /^\d{2,4}$/.test(its[0].s) && !isValue(its[1].s)){
+      its.splice(0, 2, {...its[0], s: its[0].s + " " + its[1].s, w: its[1].x + its[1].w - its[0].x});
+    }
+    let cur = null, prev = null;
+    for (const it of its){
+      if (isValue(it.s)){ if (cur) cur.values.push(it.s); }
+      else if (cur && !cur.values.length && prev && it.x - (prev.x + prev.w) < 5){ cur.label += " " + it.s; }
+      else { cur = { label: it.s, values: [], y: r.y, first: it === its[0] }; segs.push(cur); }
+      prev = it;
+    }
+  }
+  const find = re => segs.find(s => re.test(s.label) && s.values.length) || segs.find(s => re.test(s.label));
+  const vals = re => (find(re) || {}).values || [];
+
+  // position-based lookup: values to the right of a label within a vertical band
+  const labelItems = body.filter(i => !isValue(i.s));
+  function right(re, tol){
+    const lab = body.find(i => re.test(i.s)); if (!lab) return [];
+    const band = body.filter(i => Math.abs(i.y - lab.y) <= tol && i.x > lab.x + 1).sort((a,b) => a.x - b.x);
+    const out = [];
+    for (const it of band){ if (isValue(it.s)) out.push(it.s); else if (labelItems.includes(it) && it.x > lab.x + lab.w) { if (out.length) break; else if (Math.abs(it.y-lab.y) <= 3.5) break; } }
+    return out;
+  }
+
+  // project name: text after the colon, or the item just below the label
+  let name = "";
+  const pn = body.find(i => /^project name/i.test(i.s));
+  if (pn){
+    name = pn.s.replace(/^project name\s*:?\s*/i, "");
+    if (!name){
+      const below = body.filter(i => i !== pn && i.y > pn.y && i.y - pn.y < 28 && Math.abs(i.x - pn.x) < 12 && !isValue(i.s))
+                        .sort((a,b) => a.y - b.y)[0];
+      if (below) name = below.s;
+    }
+  }
+  const ct = segs.find(s => /^contract type/i.test(s.label));
+  const info = [
+    ["Contract Date", vals(/^contract date/i)[0]],
+    ["Contract Completion Date", vals(/^contract completion date/i)[0]],
+    ["Expected Completion Date", vals(/^expected completion date/i)[0]],
+    ["Report Data Date", vals(/^report data date/i)[0]],
+    ["Contract Period", vals(/^contract period/i)[0]],
+    ["Months Elapsed", vals(/^no\.? of month/i)[0]],
+    ["Time Elapsed", vals(/^time elapsed/i)[0]],
+    ["Contract Type", ct ? ct.label.replace(/^contract type\s*:?\s*/i,"") : ""],
+    ["Total Cost To Complete", vals(/^total cost to complete/i)[0]],
+    ["Expected Profitability", vals(/^expected profitability/i)[0]],
+  ];
+  const tbl = (defs) => defs.map(([label, re]) => ({ label, values: vals(re) })).filter(r => r.values.length);
+  const ratios = tbl([
+    ["Project % of Budgeted Cost", /^project % of budgeted cost/i],
+    ["Div.01 % of Budgeted Cost", /^div\.? ?01 % of budgeted cost/i],
+    ["Budgeted Cost / m3", /^budgeted cost ?\/ ?m3/i],
+    ["Budgeted Ratio kg/m3", /^budgeted ratio kg/i],
+    ["Budgeted Ratio m3/m2", /^budgeted ratio m3/i]]);
+  const consumption = tbl([
+    ["Total Budgeted Cost", /^total budgeted cost/i],
+    ["Div.01 Budget", /^div\.? ?01 budget/i],
+    ["Total Concrete (m3)", /^total conc/i],
+    ["Total Rebar (ton)", /^total rebar/i],
+    ["Total Built-up Area (m2)", /^total built/i]]);
+  const progress = tbl([
+    ["Based on Program of Work", /^based on program/i],
+    ["Based on Payment Certificate", /^based on payment/i]]);
+  const div01 = tbl([
+    ["Cost per Month", /^cost per month/i],
+    ["Remaining Budget / Cost", /^remain\w* budget/i]]);
+
+  // divisions table
+  const total = segs.find(s => /^total$/i.test(s.label) && s.values.length >= 4);
+  const indirect = [], direct = [];
+  const eacLab = body.find(i => /^total eac/i.test(i.s));
+  const divHdr = body.find(i => /^divisions$/i.test(i.s));
+  const gMark = rawItems.find(i => i.s === "(G)");
+  const top = total ? total.y : (divHdr ? divHdr.y : Infinity);
+  const drows = segs.filter(s => s !== total && s.first && s.values.length >= 4 && s.y > top && (!eacLab || s.y < eacLab.y - 2));
+  let splitY = gMark ? gMark.y : null;
+  if (splitY == null && drows.length > 2){
+    let gi = -1, gmax = 0, gmin = Infinity;
+    for (let i = 1; i < drows.length; i++){ const g = drows[i].y - drows[i-1].y; if (g > gmax){ gmax = g; gi = i; } gmin = Math.min(gmin, g); }
+    if (gmax > gmin * 1.5) splitY = drows[gi].y - 1;
+  }
+  for (const s of drows){
+    const m = s.label.match(/^(\d{2,4})\s+(.+)$/);
+    (splitY != null && s.y > splitY ? direct : indirect).push({ code: m ? m[1] : "", name: m ? m[2] : s.label, values: s.values });
+  }
+  const risk = right(/^risk$/i, 3.5), gp = right(/^gross profit$/i, 3.5);
+  const bottom = {
+    eac: right(/^total eac/i, 3.5)[0] || "",
+    selling: right(/^total selling price/i, 9)[0] || "",
+    riskPct: risk[0] || "", risk: risk[1] || "",
+    gpPct: gp[0] || "", gp: gp[1] || "",
+    claims: right(/^applied claims/i, 3.5)[0] || "",
+    vac: right(/^vac$/i, 3.5)[0] || "",
+    ecpi: right(/^ecpi$/i, 3.5)[0] || "",
+  };
+  return { name, info, ratios, consumption, progress, div01, total: total ? total.values : [], indirect, direct, bottom };
+}
+
+/* ---------- loading ---------- */
+async function loadBuffers(files){
+  messages = [];
+  for (const f of files){
+    try {
+      const items = await extractItems(f.buf);
+      const text = items.map(i => i.s).join(" ");
+      if (/Project P&L Report/i.test(text) || /EAC Gross Profit/i.test(text)){
+        const pl = parsePL(items);
+        if (!pl.name) throw new Error("could not find the Project Name");
+        pl.file = f.name; state.pl[pl.name] = pl; state.sel = pl.name;
+      } else if (/BCWP/.test(text) && /Divisions/i.test(text)){
+        const ex = parseEX(items);
+        if (!ex.name) ex.name = f.name.replace(/\.pdf$/i,"");
+        ex.file = f.name; ex.link = (state.ex[ex.name] || {}).link || null;
+        state.ex[ex.name] = ex;
+        const p = projects().find(p => p.ex === ex); if (p) state.sel = p.key;
+      } else throw new Error("not recognised as a P&L or Executive Summary report");
+    } catch(e){ messages.push(`${f.name}: ${e.message || e}`); }
+  }
+  save(); render();
+}
+window.loadBuffers = loadBuffers;
+async function loadFiles(list){
+  const files = [];
+  for (const f of list) if (/\.pdf$/i.test(f.name)) files.push({ name: f.name, buf: await f.arrayBuffer() });
+  if (files.length) await loadBuffers(files);
+}
+
+/* ---------- matching the two reports ---------- */
+function autoMatch(ex){
+  const sp = num(ex.bottom.selling);
+  const names = Object.keys(state.pl);
+  if (!isNaN(sp) && sp > 0){
+    const hit = names.filter(n => Math.abs(num(plGet(state.pl[n], /^estimated current project value without vat/i)) - sp) < 2);
+    if (hit.length === 1) return hit[0];
+  }
+  const en = norm(ex.name);
+  return names.find(n => { const pn = norm(n); return pn && en && (pn === en || pn.includes(en) || en.includes(pn)); }) || null;
+}
+function projects(){
+  const list = Object.keys(state.pl).map(n => ({ key: n, name: n, pl: state.pl[n], ex: null }));
+  const extra = [];
+  for (const ex of Object.values(state.ex)){
+    let target = ex.link === "none" ? null : (ex.link && state.pl[ex.link] ? ex.link : autoMatch(ex));
+    const p = target && list.find(p => p.key === target);
+    if (p && !p.ex) p.ex = ex; else extra.push({ key: "ex:" + ex.name, name: ex.name, pl: null, ex });
+  }
+  return list.concat(extra).sort((a,b) => a.name.localeCompare(b.name));
+}
+
+/* ---------- rendering ---------- */
+const $ = id => document.getElementById(id);
+const cls = v => isNeg(v) ? "neg" : "";
+function statusKind(s){ return /over/i.test(s) ? "bad" : /under|within|on/i.test(s) ? "good" : "warn"; }
+function cpiKind(v){ const n = num(v); const x = n > 3 ? n/100 : n; return isNaN(x) || x === 0 ? "" : x >= 1 ? "good" : x >= 0.95 ? "warn" : "bad"; }
+
+function renderSide(ps){
+  $("plabel").hidden = $("clear").hidden = !ps.length;
+  if ($("ckbtn")) $("ckbtn").hidden = !ps.length;
+  $("plist").innerHTML = ps.map(p => {
+    const st = p.pl ? plGet(p.pl, /^expected project status/i) : "";
+    const gp = p.pl ? plGet(p.pl, /^eac gross profit %/i) : (p.ex.bottom.gpPct || "");
+    return `<div class="pitem ${p.key === state.sel ? "sel" : ""}" data-k="${esc(p.key)}">
+      <div class="n"><span class="dot ${st ? statusKind(st) : ""}"></span><span style="flex:1">${esc(p.name)}</span>
+        <span class="tag ${p.pl ? "" : "off"}">P&amp;L</span><span class="tag ${p.ex ? "" : "off"}">EXE</span><button class="rm" data-rm="${esc(p.key)}" title="Remove this project">&times;</button></div>
+      <div class="s"><span>${esc(p.pl ? p.pl.client : "Executive summary only")}</span><span>${gp ? "GP " + esc(gp) : ""}</span></div>
+    </div>`; }).join("");
+}
+
+const PL_STYLE = [
+  [/^report date/i, "hdr"],
+  [/^(client|project name)$/i, "big"],
+  [/^original project contract value without vat/i, "vb"],
+  [/^total baseline budget/i, "vl"],
+  [/^baseline sponsorship \(%\)/i, "vl"],
+  [/^baseline budgeted gross profit$/i, "vb top"],
+  [/^baseline budgeted gross profit %/i, "vb"],
+  [/^estimated current project value including/i, "top"],
+  [/^estimated current project value without/i, "vb"],
+  [/^current estimate/i, "vl"],
+  [/^total current budget/i, "vb"],
+  [/^current budgeted gross profit$/i, "vb top"],
+  [/^earned value \(selling price\)$/i, "top"],
+  [/^earned value \(selling price\) - /i, "vb"],
+  [/^progress till/i, "vl"],
+  [/^actual cost \(pc\)/i, "vb yl"],
+  [/^actual (direct|in-direct) cost/i, "yl"],
+  [/^elapsed project time/i, "yl"],
+  [/^actual a[gv]{2}\. indirect/i, "yl vk"],
+  [/^current cpi/i, "vk"],
+  [/^estimate at completion \(eac\) - /i, "vb top"],
+  [/^estimate at completion \(eac\) sponsorship/i, "vk"],
+  [/^cost to complete/i, "vl"],
+  [/^remaining duration/i, "vl"],
+  [/^eac gross profit$/i, "vb top"],
+  [/^profit variance/i, "vb"],
+  [/^eac gross profit %/i, "vk gr top"],
+  [/^fixed assets/i, "vk top"],
+  [/^risk contingency/i, "vk"],
+];
+const LOGO = `<div class="logo"><img src="__LOGO__" alt="ALSHOROUK Construction Company"></div>`;
+function renderPL(pl){
+  const si = pl.rows.findIndex(r => /^expected project status/i.test(r.label));
+  const main = si < 0 ? pl.rows : pl.rows.slice(0, si), tail = si < 0 ? [] : pl.rows.slice(si);
+  const row = r => {
+    const c = (PL_STYLE.find(s => s[0].test(r.label)) || [0, ""])[1];
+    return `<tr class="${c}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`;
+  };
+  const trow = r => /^expected project status/i.test(r.label)
+    ? `<tr class="st ${statusKind(r.value)}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`
+    : `<tr class="vk"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`;
+  return `<div class="sheet pl">
+    <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Project P&amp;L Report</div>${LOGO}</div>
+    <table class="plt"><colgroup><col style="width:69%"><col></colgroup>${main.map(row).join("")}</table>
+    ${tail.length ? `<table class="plt plt2"><colgroup><col style="width:69%"><col></colgroup>${tail.map(trow).join("")}</table>` : ""}
+  </div>`;
+}
+
+const EX_F = {
+  "Project % of Budgeted Cost": ["B/A","C/A"], "Div.01 % of Budgeted Cost": ["D/A","F/A"],
+  "Budgeted Cost / m3": ["(g.1)/G","(g.2)/(I)"], "Budgeted Ratio kg/m3": ["(h.1/g.1)*1000","(h.2/g.2)*1000"],
+  "Budgeted Ratio m3/m2": ["g.1/j.1","g.2/j.2"], "Total Budgeted Cost": ["(A)","(C)"], "Div.01 Budget": ["(D)","(F)"],
+  "Total Concrete (m3)": ["(g.1)","(g.2)"], "Total Rebar (ton)": ["(h.1)","(h.2)"], "Total Built-up Area (m2)": ["(j.1)","(j.2)"],
+};
+const EX_NAME = { "Total Concrete (m3)": "Total Conc/ m3", "Total Rebar (ton)": "Total Rebar / ton", "Total Built-up Area (m2)": "Total Built-up Area/m2" };
+const EX_MONEY = /^(Budgeted Cost \/ m3|Total Budgeted Cost|Div\.01 Budget|Cost per Month|Remaining Budget)/;
+const egp = (v, c) => `<span class="m ${c||""}"><i>EGP</i><span>${esc(v ?? "")}</span></span>`;
+function renderEX(ex, ps){
+  const b = ex.bottom, I = Object.fromEntries(ex.info);
+  const opts = Object.keys(state.pl);
+  const cur = (ps.find(p => p.ex === ex && p.pl) || {}).key || "none";
+  let html = opts.length ? `<div class="link">Executive summary “${esc(ex.name)}” belongs to
+    <select id="linksel"><option value="none">— not linked —</option>${opts.map(n => `<option ${n === cur ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></div>` : "";
+  const u = v => `<td class="u">${esc(v || "")}</td>`;
+  const sec = (title, heads, rows, w) => `<table class="sec"><colgroup><col>${heads.map((_, i) => `<col style="width:${w[i]}">`).join("")}</colgroup>
+    <tr><th class="st">${title}</th>${heads.map(h => `<th class="bx"><div class="box">${h}</div></th>`).join("")}</tr>
+    ${rows.map(r => { const f = EX_F[r.label], mon = EX_MONEY.test(r.label);
+      return `<tr><td>${esc(EX_NAME[r.label] || r.label)}</td>${heads.map((_, i) => {
+        const v = r.values[i] ?? "", m = mon && !/%/.test(v);
+        return `<td class="val">${f && f[i] ? `<div class="f">${f[i]}</div>` : `<div class="f0"></div>`}<div class="uu">${m ? egp(v) : esc(v)}</div></td>`; }).join("")}</tr>`; }).join("")}
+  </table>`;
+  const drow = (d, f, c) => `<tr class="${c||""}"><td><div class="dn">${d.code ? `<span class="dc">${esc(d.code)}</span>` : ""}${esc(d.name)}</div></td>
+    ${[0,1,2,3].map(i => `<td class="dv">${f && f[i] ? `<div class="f">${f[i]}</div>` : ""}<div class="dd ${cls(d.values[i])}">${egp(d.values[i])}</div></td>`).join("")}
+    <td class="dv"><div class="dd r">${esc(d.values[4] ?? "")}</div></td><td class="dv"><div class="dd r">${esc(d.values[5] ?? "")}</div></td></tr>`;
+  html += `<div class="sheetwrap"><div class="sheet ex">
+    <div class="rule2"></div>
+    <div class="gtitle">General Information</div><div class="bar"></div>
+    <table class="gi">
+      <tr><td>Contract Date</td>${u(I["Contract Date"])}<td>Report Data Date</td>${u(I["Report Data Date"])}<td>Project Name:</td><td></td><td>Time Elapsed</td><td class="r">${esc(I["Time Elapsed"]||"")}</td></tr>
+      <tr><td>Contract Completion Date</td>${u(I["Contract Completion Date"])}<td>Contract Period</td>${u(I["Contract Period"])}<td colspan="2" class="pn">${esc(ex.name)}</td><td>No. of Month Elapsed</td><td class="r">${esc(I["Months Elapsed"]||"")}</td></tr>
+      <tr><td>Total Cost To Complete</td><td class="u">${egp(I["Total Cost To Complete"])}</td><td>Expected Profitability</td>${u(I["Expected Profitability"])}<td colspan="2">Contract Type: ${esc(I["Contract Type"]||"")}</td><td>Expected Completion Date</td>${u(I["Expected Completion Date"])}</tr>
+    </table>
+    <div class="bar"></div>
+    <div class="two">${sec("I. Ratios", ["Budget","Actual"], ex.ratios, ["29%","29%"])}${sec("II. Consumption Vs Budget", ["Total Budget","Actual to date","Deviation"], ex.consumption, ["27%","27%","13%"])}</div>
+    <div class="two">${sec("III. Progress", ["Planned","Actual"], ex.progress, ["29%","29%"])}${sec("IV. Div.01", ["Budget","Actual / Expected"], ex.div01, ["33.5%","33.5%"])}</div>
+    <div class="rule1"></div>
+    <table class="dvt">
+      <colgroup><col style="width:21%"><col><col><col><col><col style="width:12%"><col style="width:6%"></colgroup>
+      <tr class="dh"><th>Divisions</th><th>BAC</th><th>BCWP</th><th>ACWP</th><th>CV</th><th>CPI</th><th>Cost /Div.</th></tr>
+      ${ex.total.length ? drow({ name: "Total", values: ex.total }, ["(A)","(B)","(C)"], "dt") : ""}
+      ${ex.indirect.map((d, i) => drow(d, i ? null : ["(D)","(E)","(F)"], i ? "" : "gap")).join("")}
+      ${ex.direct.map((d, i) => drow(d, i ? null : ["(G)","(H)","(I)"], i ? "" : "gap")).join("")}
+    </table>
+    <div class="bar"></div>
+    <div class="bot">
+      <table class="bt">
+        <tr><td>Total EAC/Project</td><td class="red">EGP</td><td></td><td class="red r u2">${esc(b.eac)}</td></tr>
+        <tr><td>Total Selling Price (Revised Contact Value)</td><td class="red">EGP</td><td></td><td class="red r u2">${esc(b.selling)}</td></tr>
+        <tr><td>Risk</td><td class="red r u2">${esc(b.riskPct)}</td><td class="red r">EGP</td><td class="red r u2">${esc(b.risk)}</td></tr>
+        <tr><td>Gross Profit</td><td class="red r u2">${esc(b.gpPct)}</td><td class="red r">EGP</td><td class="red r u2">${esc(b.gp)}</td></tr>
+      </table>
+      <table class="bt b2">
+        <tr><td>Applied Claims</td><td class="red">EGP</td><td class="red r u2">${esc(b.claims)}</td></tr>
+        <tr><td>VAC</td><td class="red">EGP</td><td class="red r u2">${esc(b.vac)}</td></tr>
+        <tr><td>ECPI</td><td></td><td class="red r u2">${esc(b.ecpi)}</td></tr>
+      </table>
+    </div>
+    <div class="bar"></div>
+    <div class="gtitle lg">Legend</div><div class="bar"></div>
+    <table class="leg">
+      <tr><td><b>BCWP</b></td><td>Budgeted Cost of Work Performed</td><td><b>BAC</b></td><td>Budget at Completion</td></tr>
+      <tr><td><b>ACWP</b></td><td>Actual Cost of Work Performed</td><td><b>Project % of Budgeted Cost</b></td><td>BCWP/TBC VS BCWP/ACWP</td></tr>
+      <tr><td><b>CV : BCWP-ACWP</b></td><td>Cost Variance</td><td><b>VAC</b></td><td>Variance at completion</td></tr>
+      <tr><td><b>CPI : BCWP/ACWP</b></td><td>Cost Performance Index</td><td><b>ECPI</b></td><td>Expected Cost Performance Index</td></tr>
+    </table>
+    <div class="bar"></div>
+  </div></div>`;
+  return html;
+}
+
+function renderPF(ps){
+  const n = v => { const x = num(v); return isNaN(x) ? null : x; };
+  const fmt = v => v == null ? "" : Math.round(v).toLocaleString("en-US");
+  const pct = v => v == null || !isFinite(v) ? "" : (v * 100).toFixed(2) + "%";
+  const T = { rk:0, gr:0, B:0, bud:0, bgp:0, eac:0, gp:0, vr:0, C:0, ac:0, bcwp:0, k:0 };
+  let latest = "", exOnly = 0;
+  const rows = ps.filter(p => p.pl).map((p, i) => {
+    const ex = p.ex ? p.ex.bottom : null;
+    if (p.pl){
+      const g = re => plGet(p.pl, re);
+      const B = n(g(/^estimated current project value without vat/i)), bud = n(g(/^total current budget/i)),
+            bgp = n(g(/^current budgeted gross profit$/i)), eac = n(g(/^estimate at completion \(eac\) - /i)),
+            gp = n(g(/^eac gross profit$/i)), vr = n(g(/^profit variance in current budget/i)),
+            C = n(g(/^earned value \(selling price\) - /i)), ac = n(g(/^actual cost \(pc\)/i)), bcwp = n(g(/^bcwp/i)), rk = n(g(/^risk contingency/i)), gr = gp == null ? null : gp + (rk || 0);
+      if (rk != null) T.rk += rk; if (gr != null) T.gr += gr;
+      [["B",B],["bud",bud],["bgp",bgp],["eac",eac],["gp",gp],["vr",vr],["C",C],["ac",ac],["bcwp",bcwp]].forEach(([k, v]) => { if (v != null) T[k] += v; });
+      T.k++;
+      if (!latest || new Date(p.pl.date) > new Date(latest)) latest = p.pl.date;
+      const st = g(/^expected project status/i);
+      return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td>${esc(p.pl.client)}</td>
+        <td class="v">${fmt(B)}</td><td class="v">${fmt(bud)}</td><td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
+        <td class="v">${fmt(eac)}</td><td class="v ${cls(gp)}">${fmt(gp)}</td><td class="v b ${cls(gp)}">${esc(g(/^eac gross profit %/i))}</td><td class="v">${fmt(rk)}</td><td class="v ${cls(gr)}">${fmt(gr)}</td><td class="v b ${cls(gr)}">${B ? pct(gr / B) : ""}</td>
+        <td class="v ${cls(vr)}">${fmt(vr)}</td><td class="v">${esc(g(/^progress till/i))}</td><td class="v">${esc(g(/^current cpi/i))}</td>
+        
+        <td class="c">${esc(g(/^expected finish date/i))}</td><td class="st ${st ? statusKind(st) : ""}">${esc(st)}</td></tr>`;
+    }
+    exOnly++;
+    return `<tr class="xo" data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}*</td><td></td>
+      <td class="v">${fmt(n(ex.selling))}</td><td></td><td></td><td class="v">${fmt(n(ex.eac))}</td><td class="v ${cls(ex.gp)}">${fmt(n(ex.gp))}</td>
+      <td class="v b">${esc(ex.gpPct)}</td><td></td><td></td><td></td><td class="v">${esc(ex.ecpi)}</td><td class="v ${cls(ex.vac)}">${esc(ex.vac)}</td>
+      <td class="c">${esc((p.ex.info.find(x => x[0] === "Expected Completion Date") || [])[1] || "")}</td><td></td></tr>`;
+  }).join("");
+  const over = ps.filter(p => p.pl && /over/i.test(plGet(p.pl, /^expected project status/i))).length;
+  const tot = T.k ? `<tr class="tot"><td></td><td class="pn" colspan="2">Total (${T.k} project${T.k > 1 ? "s" : ""})</td>
+      <td class="v">${fmt(T.B)}</td><td class="v">${fmt(T.bud)}</td><td class="v">${pct(T.bgp / T.B)}</td>
+      <td class="v">${fmt(T.eac)}</td><td class="v ${cls(T.gp)}">${fmt(T.gp)}</td><td class="v ${cls(T.gp)}">${pct(T.gp / T.B)}</td><td class="v">${fmt(T.rk)}</td><td class="v ${cls(T.gr)}">${fmt(T.gr)}</td><td class="v ${cls(T.gr)}">${pct(T.gr / T.B)}</td>
+      <td class="v ${cls(T.vr)}">${fmt(T.vr)}</td><td class="v">${pct(T.C / T.B)}</td><td class="v">${T.ac ? (T.bcwp / T.ac).toFixed(2) : ""}</td>
+      <td></td><td class="c">${over ? over + " over" : ""}</td></tr>` : "";
+  return `<div class="sheetwrap"><div class="sheet pf">
+    <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Portfolio Summary</div>${LOGO}</div>
+    <div class="pfdate">${latest ? "Report Date: <b>" + esc(latest) + "</b>" : ""}</div>
+    <table class="pft">
+            <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>excl. VAT</th><th>Total Current<br>Budget</th><th>Budgeted<br>GP %</th>
+        <th>EAC<br>(excl. Spons.)</th><th>EAC Gross<br>Profit</th><th>EAC<br>GP %</th><th>Risk<br>Contingency</th><th>GP incl.<br>Risk</th><th>GP incl.<br>Risk %</th><th>Profit Var.<br>vs Budget</th><th>Progress</th><th>CPI</th>
+        <th>Expected<br>Finish</th><th>Status @<br>Completion</th></tr>
+      ${rows}${tot}
+    </table>
+    <div class="pfnote">All figures are taken from the P&amp;L reports. Total GP % and progress are weighted by contract value; total CPI = total BCWP / total actual cost. GP incl. Risk = EAC Gross Profit + Risk Contingency (Budget); its % is over contract value excl. VAT.</div>
+  </div></div>`;
+}
+function renderCK(ps){
+  const n = v => { const x = num(v); return isNaN(x) ? null : x; };
+  const fmt = v => v == null ? "–" : Math.round(v).toLocaleString("en-US");
+  const both = ps.filter(p => p.pl && p.ex);
+  let bad = 0;
+  const blocks = both.map(p => {
+    const g = re => n(plGet(p.pl, re)), b = p.ex.bottom, t = p.ex.total || [];
+    const bud = g(/^total current budget/i), sp = g(/^current budget sponsorship/i);
+    const rows = [
+      ["Contract Value excl. VAT", g(/^estimated current project value without vat/i), n(b.selling), "P&L (B) vs Total Selling Price"],
+      ["BAC (Budget excl. Sponsorship)", bud == null ? null : bud - (sp || 0), n(t[0]), "Total Current Budget − Sponsorship vs Total BAC (A)"],
+      ["BCWP", g(/^bcwp/i), n(t[1]), ""],
+      ["Actual Cost (ACWP)", g(/^actual cost \(pc\)/i), n(t[2]), ""],
+      ["EAC", g(/^estimate at completion \(eac\) - /i), n(b.eac), "EAC without Sponsorship vs Total EAC/Project"],
+      ["Risk Contingency", g(/^risk contingency/i), n(b.risk), ""],
+      ["Gross Profit", g(/^eac gross profit$/i), n(b.gp), "EAC Gross Profit vs Gross Profit"],
+      ["Gross Profit %", g(/^eac gross profit %/i), n(b.gpPct), "", true],
+    ];
+    let k = 0;
+    const tr = rows.map(([lab, a, e, note, pc]) => {
+      let d = a == null || e == null ? null : a - e;
+      if (d != null){ d = pc ? Math.round(d * 100) / 100 : Math.round(d); if (d === 0) d = 0; }
+      const ok = d != null && Math.abs(d) <= (pc ? 0.01 : 1);
+      if (d != null && !ok) k++;
+      const f = pc ? (v => v == null ? "–" : v.toFixed(2) + "%") : fmt;
+      return `<tr><td class="lb">${lab}${note ? `<small>${esc(note)}</small>` : ""}</td><td class="v">${f(a)}</td><td class="v">${f(e)}</td>
+        <td class="v ${d != null && !ok ? "neg" : ""}">${d == null ? "–" : pc ? d.toFixed(2) + "%" : fmt(d)}</td>
+        <td class="st ${d == null ? "" : ok ? "good" : "bad"}">${d == null ? "n/a" : ok ? "OK" : "Diff"}</td></tr>`;
+    }).join("");
+    if (k) bad++;
+    return `<tr class="ph"><td colspan="5">${esc(p.name)} <span>— Executive: ${esc(p.ex.name)}${k ? " · " + k + " difference" + (k > 1 ? "s" : "") : " · all match"}</span></td></tr>${tr}`;
+  }).join("");
+  const noEx = ps.filter(p => p.pl && !p.ex).map(p => p.name), noPl = ps.filter(p => !p.pl).map(p => p.name);
+  return `<div class="sheetwrap"><div class="sheet pl ck">
+    <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">P&amp;L vs Executive Summary Check</div>${LOGO}</div>
+    <div class="pfdate">${both.length} project${both.length === 1 ? "" : "s"} checked · <b>${bad ? bad + " with differences" : "all match"}</b></div>
+    ${both.length ? `<table class="pft ckt"><tr class="hd"><th>Item</th><th>P&amp;L</th><th>Executive</th><th>Difference</th><th>Check</th></tr>${blocks}</table>` : ""}
+    <div class="pfnote">Difference = P&amp;L − Executive Summary. OK when within 1 (0.01% for percentages).
+      ${noEx.length ? "<br>No Executive Summary loaded: " + noEx.map(esc).join(", ") + "." : ""}${noPl.length ? "<br>No P&amp;L loaded: " + noPl.map(esc).join(", ") + "." : ""}</div>
+  </div></div>`;
+}
+function fitPrint(){
+  const el = document.querySelector(".sheet"); if (!el) return;
+  const ex = el.classList.contains("ex"), pf = el.classList.contains("pf"), mm = 96 / 25.4;
+  if (pf){ el.style.setProperty("--pz", (Math.min((297 - 16) * mm / el.offsetWidth, (210 - 16) * mm / el.offsetHeight) * 0.985).toFixed(4)); return; }
+  const pw = ((ex ? 420 : 210) - 16) * mm, ph = (297 - 16) * mm;
+  let W = ex ? 1240 : 800;
+  el.style.removeProperty("--pw");
+  el.classList.add("pm");
+  let hgt = el.offsetHeight;
+  if (ex){ // widen the sheet for print so a tall sheet still fills the A3 landscape page
+    W = Math.round(Math.max(1240, Math.min(1700, hgt * pw / ph)));
+    el.style.setProperty("--pw", W + "px");
+    hgt = el.offsetHeight;
+  }
+  el.classList.remove("pm");
+  el.style.setProperty("--pz", (Math.min(pw / W, ph / hgt) * 0.985).toFixed(4));
+}
+/* every negative figure: red, in brackets, whole numbers rounded */
+const NEG_RE = /(^|[^\w.,%)])(?:-\s?(\d[\d,]*(?:\.\d+)?)(%?)|\((\d[\d,]*(?:\.\d+)?)(%?)\))(?![\w.,])/g;
+function markNegatives(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+  while (w.nextNode()) if (/\d/.test(w.currentNode.nodeValue)) nodes.push(w.currentNode);
+  for (const t of nodes){
+    const s = t.nodeValue; NEG_RE.lastIndex = 0;
+    if (!NEG_RE.test(s)) continue;
+    NEG_RE.lastIndex = 0;
+    const frag = document.createDocumentFragment(); let last = 0, m;
+    while ((m = NEG_RE.exec(s))){
+      const numStr = m[2] || m[4], pc = (m[2] ? m[3] : m[5]) || "", start = m.index + m[1].length;
+      const v = parseFloat(numStr.replace(/,/g, ""));
+      if (!v || !(m[2] || /[,.]/.test(numStr) || pc || numStr.length >= 4)) continue;
+      frag.appendChild(document.createTextNode(s.slice(last, start)));
+      const sp = document.createElement("span"); sp.className = "negv";
+      sp.textContent = "(" + (pc ? numStr : Math.round(v).toLocaleString("en-US")) + pc + ")";
+      frag.appendChild(sp); last = m.index + m[0].length;
+    }
+    if (!last) continue;
+    frag.appendChild(document.createTextNode(s.slice(last)));
+    t.parentNode.replaceChild(frag, t);
+  }
+}
+function render(){ renderInner(); markNegatives($("main")); fitPrint(); }
+function renderInner(){
+  const ps = projects();
+  if (state.tab === "ck" && !$("ckbtn")) state.tab = "pl";
+  if (!ps.find(p => p.key === state.sel)) state.sel = ps.length ? ps[0].key : null;
+  renderSide(ps);
+  $("pagestyle").textContent = `@page{size:${state.tab === "ex" ? "A3 landscape" : state.tab === "pf" ? "A4 landscape" : "A4 portrait"};margin:0}`;
+  $("xlsx").hidden = !(state.tab === "pf" || state.tab === "ck");
+  const sel = $("psel");
+  sel.disabled = !ps.length || state.tab === "pf" || state.tab === "ck";
+  sel.innerHTML = ps.length ? ps.map(p => `<option value="${esc(p.key)}" ${p.key === state.sel ? "selected" : ""}>${esc(p.name)}${p.pl ? "" : " (Executive only)"}</option>`).join("") : `<option>No projects loaded</option>`;
+  document.querySelectorAll(".topbar .tab").forEach(t => t.classList.toggle("on", t.dataset.t === state.tab));
+  const msgs = messages.length ? `<div class="msgs">${messages.map(m => `<div class="msg">${esc(m)}</div>`).join("")}</div>` : "";
+  const p = ps.find(p => p.key === state.sel);
+  // the browser uses the page title as the default file name when saving as PDF
+  const safe = s => String(s).replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim();
+  document.title = p ? safe(p.name + " - " + (state.tab === "pl" ? "P&L Report" : "Executive Summary")
+    + (state.tab === "pl" && p.pl && p.pl.date ? " - " + p.pl.date : "")) : "Project Reports";
+  if (p && state.tab === "ck"){
+    document.title = "P&L vs Executive Summary Check";
+    $("main").innerHTML = msgs + renderCK(ps);
+    return;
+  }
+  if (p && state.tab === "pf"){
+    document.title = safe("Portfolio Summary" + (Object.values(state.pl)[0] ? " - " + Object.values(state.pl).map(x => x.date).sort((a, b) => new Date(b) - new Date(a))[0] : ""));
+    $("main").innerHTML = msgs + renderPF(ps);
+    return;
+  }
+  if (!p){
+    $("main").innerHTML = msgs + `<div class="empty"><b>No reports loaded yet</b>Drop your Project P&amp;L and Executive Summary PDFs anywhere on this page.<br>Each file is read on this computer and the project is detected automatically.<br><button class="addbtn" data-add>Add PDF reports</button></div>`;
+    return;
+  }
+  const missing = t => `<div class="empty"><b>${t} not loaded for this project</b>Drop the PDF anywhere on this page, or use the edit (pencil) button at the top right.<br><button class="addbtn" data-add>Add PDF reports</button></div>`;
+  const body = state.tab === "pl" ? (p.pl ? renderPL(p.pl) : missing("P&amp;L report")) : (p.ex ? renderEX(p.ex, ps) : missing("Executive summary"));
+  $("main").innerHTML = msgs + body;
+}
+
+/* ---------- events ---------- */
+$("plist").addEventListener("click", e => {
+  const rm = e.target.closest(".rm");
+  if (rm){
+    const p = projects().find(p => p.key === rm.dataset.rm);
+    if (p && confirm('Remove "' + p.name + '" and its loaded reports from this page?')){
+      if (p.pl) delete state.pl[p.pl.name];
+      if (p.ex) delete state.ex[p.ex.name];
+      save(); render();
+    }
+    return;
+  }
+  const el = e.target.closest(".pitem"); if (el){ state.sel = el.dataset.k; save(); render(); } });
+document.querySelector(".topbar").addEventListener("click", e => { const t = e.target.closest(".tab"); if (t){ state.tab = t.dataset.t; save(); render(); } });
+$("psel").addEventListener("change", e => { state.sel = e.target.value; save(); render(); });
+$("main").addEventListener("click", e => {
+  if (e.target.closest("[data-add]")) $("file").click();
+  const r = e.target.closest(".pft tr[data-k]");
+  if (r){ const p = projects().find(q => q.key === r.dataset.k); if (p){ state.sel = p.key; state.tab = p.pl ? "pl" : "ex"; save(); render(); window.scrollTo(0, 0); } }
+});
+const setEdit = on => document.body.classList.toggle("editing", on);
+$("edit").addEventListener("click", () => setEdit(!document.body.classList.contains("editing")));
+if ($("ckbtn")) $("ckbtn").addEventListener("click", () => { state.tab = "ck"; save(); setEdit(false); render(); window.scrollTo(0, 0); });
+$("pclose").addEventListener("click", () => setEdit(false));
+$("scrim").addEventListener("click", () => setEdit(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape") setEdit(false); });
+function buildCopy(){
+  const doc = document.documentElement.cloneNode(true);
+  const q = s => doc.querySelector(s);
+  ["#main", "#plist", "#psel", "#pagestyle"].forEach(s => { const el = q(s); if (el) el.innerHTML = ""; });
+  q("body").removeAttribute("class");
+  const ck = q("#ckbtn"); if (ck) ck.remove();
+  const sheet = q(".sheet"); if (sheet) sheet.style.zoom = "";
+  const data = Object.assign({}, state, { snap: "copy-" + Date.now() });
+  if (data.tab === "ck") data.tab = "pl";
+  q("#embedded").textContent = JSON.stringify(data).replace(/</g, "\\u003c");
+  return "<!DOCTYPE html>\n" + doc.outerHTML;
+}
+window.buildCopy = buildCopy;
+$("savecopy").addEventListener("click", () => {
+  if (!projects().length){ alert("Load at least one report first."); return; }
+  const d = new Date(), pad = n => String(n).padStart(2, "0");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([buildCopy()], { type: "text/html" }));
+  a.download = "Project Reports " + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".html";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+});
+$("print").addEventListener("click", () => window.print());
+$("xlsx").addEventListener("click", () => exportExcel().catch(e => alert("Excel export failed: " + (e.message || e))));
+async function exportExcel(){
+  const sheet = document.querySelector(".sheet"), tbl = sheet && sheet.querySelector(".pft"); if (!tbl) return;
+  const isCk = state.tab === "ck", title = sheet.querySelector(".ttl").textContent.trim();
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet(isCk ? "Check" : "Portfolio", {
+    views: [{ showGridLines: false }],
+    pageSetup: { paperSize: 9, orientation: isCk ? "portrait" : "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0,
+      horizontalCentered: true, margins: { left: 0.3, right: 0.3, top: 0.45, bottom: 0.5, header: 0.2, footer: 0.25 } },
+    headerFooter: { oddFooter: "&L&8" + title.replace(/&/g, "&&") + "&R&8Page &P of &N" } });
+  const rows = [...tbl.rows];
+  const ncol = Math.max(...rows.map(r => [...r.cells].reduce((s, c) => s + c.colSpan, 0)));
+  const TNR = "Times New Roman", thin = { style: "thin", color: { argb: "FF000000" } };
+  const fill = c => ({ type: "pattern", pattern: "solid", fgColor: { argb: "FF" + c } });
+  const widths = Array(ncol).fill(6);
+  // heading block
+  ws.getCell(1, 1).value = "Company : ALSHOROUK"; ws.getCell(2, 1).value = "Department : Cost Control Dep.";
+  [1, 2].forEach(r => ws.getCell(r, 1).font = { name: "Arial", bold: true, size: 10 });
+  ws.mergeCells(4, 1, 4, ncol);
+  Object.assign(ws.getCell(4, 1), { value: title, font: { name: "Arial", bold: true, size: 16 }, alignment: { horizontal: "center", vertical: "middle" } });
+  ws.getRow(4).height = 30;
+  const sub = sheet.querySelector(".pfdate"); ws.getCell(5, 1).value = sub ? sub.innerText.trim() : "";
+  ws.getCell(5, 1).font = { name: TNR, size: 12, bold: true };
+  const img = sheet.querySelector(".logo img");
+  if (img){ const id = wb.addImage({ base64: img.src, extension: "jpeg" }); ws.addImage(id, { tl: { col: ncol - 2, row: 0 }, ext: { width: 130, height: 58 } }); }
+  // table
+  const start = 7; let r = start; const merged = new Set();
+  for (const tr of rows){
+    let c = 1, lines = 1;
+    const hd = tr.classList.contains("hd"), tot = tr.classList.contains("tot"), ph = tr.classList.contains("ph"), xo = tr.classList.contains("xo");
+    for (const td of tr.cells){
+      while (merged.has(r + ":" + c)) c++;
+      const cell = ws.getCell(r, c), cs = td.colSpan;
+      let text = td.innerText.trim(), val = text, fmt = null;
+      const small = td.querySelector("small");
+      if (small){
+        const main = text.replace(small.innerText.trim(), "").trim();
+        val = { richText: [{ text: main, font: { name: TNR, bold: true, size: 11 } }, { text: "\n" + small.innerText.trim(), font: { name: "Arial", size: 8, color: { argb: "FF555555" } } }] };
+        lines = 2; text = main;
+      } else if (!hd){
+        const m = text.match(/^(\()?(-)?([\d,]+(?:\.(\d+))?)(%)?\)?$/);
+        if (m && /\d/.test(m[3])){
+          let v = parseFloat(m[3].replace(/,/g, "")); if (m[1] || m[2]) v = -v;
+          const d = m[4] ? m[4].length : 0, z = d ? "0." + "0".repeat(d) : "0";
+          if (m[5]){ v /= 100; fmt = z + "%;[Red](" + z + "%)"; } else fmt = "#,##0" + (d && Math.abs(v) < 100 ? z.slice(1) : "") + ";[Red](#,##0" + (d && Math.abs(v) < 100 ? z.slice(1) : "") + ")";
+          if (!m[5] && !(d && Math.abs(v) < 100)) v = Math.round(v);
+          val = v;
+        }
+      }
+      cell.value = val; if (fmt) cell.numFmt = fmt;
+      const k = td.classList;
+      cell.font = { name: TNR, size: 11, bold: hd || tot || ph || k.contains("pn") || k.contains("lb") || k.contains("b"), italic: xo,
+        color: { argb: hd || k.contains("st") && /bad|good|warn/.test(td.className) ? "FFFFFFFF" : k.contains("neg") ? "FFC00000" : k.contains("b") ? "FF1B4AA0" : xo ? "FF555555" : "FF000000" } };
+      cell.alignment = { vertical: "middle", wrapText: hd || !!small, horizontal: hd || k.contains("c") || k.contains("st") ? "center" : fmt ? "right" : "left" };
+      cell.border = { top: tot || ph ? { style: "medium" } : thin, left: thin, bottom: thin, right: thin };
+      const f = hd ? "0C1F5C" : tot || ph ? "DDE4F2" : k.contains("bad") ? "D0432A" : k.contains("good") ? "2E9E5B" : k.contains("warn") ? "D99A1C" : k.contains("v") ? "F2F2F2" : null;
+      if (f) cell.fill = fill(f);
+      if (cs > 1){ ws.mergeCells(r, c, r, c + cs - 1); for (let i = 1; i < cs; i++) merged.add(r + ":" + (c + i)); }
+      const parts = text.split("\n"); lines = Math.max(lines, parts.length);
+      if (cs === 1) widths[c - 1] = Math.max(widths[c - 1], ...parts.map(s => s.length * (hd ? 1.05 : 1.1) + 2));
+      c += cs;
+    }
+    ws.getRow(r).height = lines > 1 ? lines * 14 + 4 : 18;
+    r++;
+  }
+  widths.forEach((w, i) => ws.getColumn(i + 1).width = Math.min(Math.round(w), isCk && i === 0 ? 44 : 34));
+  ws.pageSetup.printTitlesRow = start + ":" + start;
+  const note = sheet.querySelector(".pfnote");
+  if (note){
+    r++; ws.mergeCells(r, 1, r, ncol);
+    const t = note.innerText.trim(), tot = widths.reduce((a, b) => a + Math.min(b, 34), 0);
+    Object.assign(ws.getCell(r, 1), { value: t, font: { name: "Arial", size: 9, color: { argb: "FF444444" } }, alignment: { wrapText: true, vertical: "top" } });
+    ws.getRow(r).height = Math.max(1, t.split("\n").reduce((a, s) => a + Math.ceil(s.length / (tot * 1.15)), 0)) * 13 + 4;
+  }
+  ws.pageSetup.printArea = "A1:" + ws.getColumn(ncol).letter + r;
+  const buf = await wb.xlsx.writeBuffer();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+  a.download = document.title + ".xlsx"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  window.__lastXlsx = buf;
+}
+$("main").addEventListener("change", e => {
+  if (e.target.id !== "linksel") return;
+  const p = projects().find(p => p.key === state.sel); if (!p || !p.ex) return;
+  p.ex.link = e.target.value; save();
+  const np = projects().find(q => q.ex === p.ex); if (np) state.sel = np.key;
+  render();
+});
+const drop = $("drop"), file = $("file");
+drop.addEventListener("click", () => file.click());
+file.addEventListener("change", () => { loadFiles(file.files); file.value = ""; });
+["dragover","dragenter"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); document.body.classList.add("dragging"); }));
+["dragleave","drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); if (ev === "drop" || !e.relatedTarget) document.body.classList.remove("dragging"); }));
+document.addEventListener("drop", e => loadFiles(e.dataTransfer.files));
+$("clear").addEventListener("click", () => { if (confirm("Remove all loaded reports from this page?")){ state = { pl:{}, ex:{}, sel:null, tab:"pl", snap: state.snap }; messages = []; save(); render(); } });
+render();
+</script>
+</body>
+</html>
