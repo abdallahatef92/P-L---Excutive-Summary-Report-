@@ -469,7 +469,7 @@ function parseEX(rawItems){
     const m = s.label.match(/^(\d{2,4})\s+(.+)$/);
     (splitY != null && s.y > splitY ? direct : indirect).push({ code: m ? m[1] : "", name: m ? m[2] : s.label, values: s.values });
   }
-  const risk = right(/^risk$/i, 3.5), gp = right(/^gross profit$/i, 3.5);
+  const risk = right(/^risk(\s+contingency.*)?$/i, 3.5), gp = right(/^gross profit$/i, 3.5);
   const bottom = {
     eac: right(/^total eac/i, 3.5)[0] || "",
     selling: right(/^total selling price/i, 9)[0] || "",
