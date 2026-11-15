@@ -730,10 +730,10 @@ function renderCK(ps){
   let bad = 0;
   const blocks = both.map(p => {
     const g = re => n(plGet(p.pl, re)), b = p.ex.bottom, t = p.ex.total || [];
-    const bud = g(/^total current budget/i), sp = g(/^current budget sponsorship/i);
+    const bd = g(/^current budget direct/i), bi = g(/^current budget in-direct/i);
     const rows = [
       ["Contract Value excl. VAT", g(/^estimated current project value without vat/i), n(b.selling), "P&L (B) vs Total Selling Price"],
-      ["BAC (Budget excl. Sponsorship)", bud == null ? null : bud - (sp || 0), n(t[0]), "Total Current Budget − Sponsorship vs Total BAC (A)"],
+      ["BAC", bd == null && bi == null ? null : (bd || 0) + (bi || 0), n(t[0]), "Current Budget Direct + In-Direct vs Total BAC (A)"],
       ["BCWP", g(/^bcwp/i), n(t[1]), ""],
       ["Actual Cost (ACWP)", g(/^actual cost \(pc\)/i), n(t[2]), ""],
       ["EAC", g(/^estimate at completion \(eac\) - /i), n(b.eac), "EAC without Sponsorship vs Total EAC/Project"],
