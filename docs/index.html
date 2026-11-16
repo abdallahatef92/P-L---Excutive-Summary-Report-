@@ -239,6 +239,7 @@ body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
 .pfdate{font-family:"Times New Roman",Times,serif;font-size:15px;margin-bottom:8px}
 .pft{border:2px solid #000;font-family:"Times New Roman",Times,serif;font-size:13.5px;table-layout:auto}
 .sheet .pft td{white-space:nowrap}
+.sheet .pflegend{margin-top:10px;font-size:12px;font-weight:700;color:#0c1f5c}
 .sheet .pft td,.sheet .pft th{border:1px solid #000;padding:4px 5px;line-height:1.2}
 .sheet .pft tr.hd th{background:#0c1f5c;color:#fff;font-weight:700;text-align:center;font-size:13px;padding:6px 4px}
 .sheet .pft td{background:#fff}
@@ -270,7 +271,7 @@ body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.2.0 · 2026-11-16</span></div>
+  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.3.0 · 2026-11-16</span></div>
   <label class="psel"><span>Project</span><select id="psel"></select></label>
   <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button></nav>
   <span class="grow"></span>
@@ -765,50 +766,47 @@ function renderPF(ps){
   const n = v => { const x = num(v); return isNaN(x) ? null : x; };
   const fmt = v => v == null ? "" : Math.round(v).toLocaleString("en-US");
   const pct = v => v == null || !isFinite(v) ? "" : (v * 100).toFixed(2) + "%";
-  const T = { rk:0, gr:0, B:0, bud:0, bgp:0, eac:0, gp:0, vr:0, C:0, ac:0, bcwp:0, k:0 };
-  let latest = "", exOnly = 0;
+  const T = { B0:0, B:0, bac:0, bgp:0, eac:0, vr:0, gp:0, rk:0, gr:0, C:0, bcwp:0, ac:0, cv:0, k:0 };
+  let latest = "";
   const rows = ps.filter(p => p.pl).map((p, i) => {
-    const ex = p.ex ? p.ex.bottom : null;
-    if (p.pl){
-      const g = re => plGet(p.pl, re);
-      const B = n(g(/^estimated current project value without vat/i)), bud = n(g(/^total current budget/i)),
-            bgp = n(g(/^current budgeted gross profit$/i)), eac = n(g(/^estimate at completion \(eac\) - /i)),
-            gp = n(g(/^eac gross profit$/i)), vr = n(g(/^profit variance in current budget/i)),
-            C = n(g(/^earned value \(selling price\) - /i)), ac = n(g(/^actual cost \(pc\)/i)), bcwp = n(g(/^bcwp/i)), rk = n(g(/^risk contingency/i)), gr = gp == null ? null : gp + (rk || 0);
-      if (rk != null) T.rk += rk; if (gr != null) T.gr += gr;
-      [["B",B],["bud",bud],["bgp",bgp],["eac",eac],["gp",gp],["vr",vr],["C",C],["ac",ac],["bcwp",bcwp]].forEach(([k, v]) => { if (v != null) T[k] += v; });
-      T.k++;
-      if (!latest || new Date(p.pl.date) > new Date(latest)) latest = p.pl.date;
-      const st = g(/^expected project status/i);
-      return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td>${esc(p.pl.client)}</td>
-        <td class="v">${fmt(B)}</td><td class="v">${fmt(bud)}</td><td class="v ${cls(bgp)}">${fmt(bgp)}</td><td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
-        <td class="v">${fmt(eac)}</td><td class="v ${cls(gp)}">${fmt(gp)}</td><td class="v b ${cls(gp)}">${esc(g(/^eac gross profit %/i))}</td><td class="v">${fmt(rk)}</td><td class="v ${cls(gr)}">${fmt(gr)}</td><td class="v b ${cls(gr)}">${B ? pct(gr / B) : ""}</td>
-        <td class="v ${cls(vr)}">${fmt(vr)}</td><td class="v">${esc(g(/^progress till/i))}</td><td class="v">${esc(g(/^current cpi/i))}</td>
-        
-        <td class="c">${esc(g(/^expected finish date/i))}</td><td class="st ${st ? statusKind(st) : ""}">${esc(st)}</td></tr>`;
-    }
-    exOnly++;
-    return `<tr class="xo" data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}*</td><td></td>
-      <td class="v">${fmt(n(ex.selling))}</td><td></td><td></td><td class="v">${fmt(n(ex.eac))}</td><td class="v ${cls(ex.gp)}">${fmt(n(ex.gp))}</td>
-      <td class="v b">${esc(ex.gpPct)}</td><td></td><td></td><td></td><td class="v">${esc(ex.ecpi)}</td><td class="v ${cls(ex.vac)}">${esc(ex.vac)}</td>
-      <td class="c">${esc((p.ex.info.find(x => x[0] === "Expected Completion Date") || [])[1] || "")}</td><td></td></tr>`;
+    const g = re => plGet(p.pl, re);
+    const bd = n(g(/^current budget direct/i)), bi = n(g(/^current budget in-direct/i));
+    const B0 = n(g(/^estimated current project value including/i)), B = n(g(/^estimated current project value without vat/i)),
+          bac = bd == null && bi == null ? null : (bd || 0) + (bi || 0),
+          bgp = n(g(/^current budgeted gross profit$/i)), eac = n(g(/^estimate at completion \(eac\) - /i)),
+          gp = n(g(/^eac gross profit$/i)), vr = n(g(/^profit variance in current budget/i)),
+          C = n(g(/^earned value \(selling price\) - /i)), ac = n(g(/^actual cost \(pc\)/i)), bcwp = n(g(/^bcwp/i)),
+          rk = n(g(/^risk contingency/i)), gr = gp == null ? null : gp + (rk || 0),
+          cv = bcwp == null || ac == null ? null : bcwp - ac;
+    Object.entries({ B0, B, bac, bgp, eac, vr, gp, rk, gr, C, bcwp, ac, cv }).forEach(([k, v]) => { if (v != null) T[k] += v; });
+    T.k++;
+    if (!latest || new Date(p.pl.date) > new Date(latest)) latest = p.pl.date;
+    const st = g(/^expected project status/i);
+    return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td>${esc(p.pl.client)}</td>
+      <td class="v">${fmt(B0)}</td><td class="v">${fmt(B)}</td><td class="v">${fmt(bac)}</td><td class="v ${cls(bgp)}">${fmt(bgp)}</td><td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
+      <td class="v">${fmt(eac)}</td><td class="v ${cls(vr)}">${fmt(vr)}</td><td class="v ${cls(gp)}">${fmt(gp)}</td><td class="v b ${cls(gp)}">${esc(g(/^eac gross profit %/i))}</td>
+      <td class="v">${fmt(rk)}</td><td class="v ${cls(gr)}">${fmt(gr)}</td><td class="v b ${cls(gr)}">${B ? pct(gr / B) : ""}</td>
+      <td class="v">${fmt(C)}</td><td class="v">${esc(g(/^progress till/i))}</td><td class="v">${fmt(bcwp)}</td><td class="v">${fmt(ac)}</td><td class="v ${cls(cv)}">${fmt(cv)}</td><td class="v">${esc(g(/^current cpi/i))}</td>
+      <td class="c">${esc(g(/^expected finish date/i))}</td><td class="st ${st ? statusKind(st) : ""}">${esc(st)}</td></tr>`;
   }).join("");
   const over = ps.filter(p => p.pl && /over/i.test(plGet(p.pl, /^expected project status/i))).length;
   const tot = T.k ? `<tr class="tot"><td></td><td class="pn" colspan="2">Total (${T.k} project${T.k > 1 ? "s" : ""})</td>
-      <td class="v">${fmt(T.B)}</td><td class="v">${fmt(T.bud)}</td><td class="v ${cls(T.bgp)}">${fmt(T.bgp)}</td><td class="v">${pct(T.bgp / T.B)}</td>
-      <td class="v">${fmt(T.eac)}</td><td class="v ${cls(T.gp)}">${fmt(T.gp)}</td><td class="v ${cls(T.gp)}">${pct(T.gp / T.B)}</td><td class="v">${fmt(T.rk)}</td><td class="v ${cls(T.gr)}">${fmt(T.gr)}</td><td class="v ${cls(T.gr)}">${pct(T.gr / T.B)}</td>
-      <td class="v ${cls(T.vr)}">${fmt(T.vr)}</td><td class="v">${pct(T.C / T.B)}</td><td class="v">${T.ac ? (T.bcwp / T.ac).toFixed(2) : ""}</td>
+      <td class="v">${fmt(T.B0)}</td><td class="v">${fmt(T.B)}</td><td class="v">${fmt(T.bac)}</td><td class="v ${cls(T.bgp)}">${fmt(T.bgp)}</td><td class="v">${pct(T.bgp / T.B)}</td>
+      <td class="v">${fmt(T.eac)}</td><td class="v ${cls(T.vr)}">${fmt(T.vr)}</td><td class="v ${cls(T.gp)}">${fmt(T.gp)}</td><td class="v ${cls(T.gp)}">${pct(T.gp / T.B)}</td>
+      <td class="v">${fmt(T.rk)}</td><td class="v ${cls(T.gr)}">${fmt(T.gr)}</td><td class="v ${cls(T.gr)}">${pct(T.gr / T.B)}</td>
+      <td class="v">${fmt(T.C)}</td><td class="v">${pct(T.C / T.B)}</td><td class="v">${fmt(T.bcwp)}</td><td class="v">${fmt(T.ac)}</td><td class="v ${cls(T.cv)}">${fmt(T.cv)}</td><td class="v">${T.ac ? (T.bcwp / T.ac).toFixed(2) : ""}</td>
       <td></td><td class="c">${over ? over + " over" : ""}</td></tr>` : "";
   return `<div class="sheetwrap"><div class="sheet pf">
     <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Portfolio Summary</div>${LOGO}</div>
     <div class="pfdate">${latest ? "Report Date: <b>" + esc(latest) + "</b>" : ""}</div>
     <table class="pft">
-            <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>excl. VAT</th><th>Total Current<br>Budget</th><th>Budgeted<br>Gross Profit</th><th>Budgeted<br>GP %</th>
-        <th>EAC<br>(excl. Spons.)</th><th>EAC Gross<br>Profit</th><th>EAC<br>GP %</th><th>Risk<br>Contingency</th><th>GP incl.<br>Risk</th><th>GP incl.<br>Risk %</th><th>Profit Var.<br>vs Budget</th><th>Progress</th><th>CPI</th>
-        <th>Expected<br>Finish</th><th>Status @<br>Completion</th></tr>
+      <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>incl. VAT</th><th>Contract Value<br>excl. VAT</th><th>BAC excl.<br>Sponsorship</th><th>Budgeted<br>Gross Profit</th><th>Budgeted<br>GP %</th>
+        <th>EAC<br>(excl. Spons.)</th><th>VAC</th><th>EAC Gross<br>Profit</th><th>EAC<br>GP %</th><th>Risk<br>Contingency</th><th>GP +<br>Risk</th><th>GP +<br>Risk %</th>
+        <th>EV</th><th>Progress</th><th>BCWP</th><th>AC</th><th>CV</th><th>CPI</th><th>Expected<br>Finish</th><th>Status @<br>Completion</th></tr>
       ${rows}${tot}
     </table>
-    <div class="pfnote">All figures are taken from the P&amp;L reports. Total GP % and progress are weighted by contract value; total CPI = total BCWP / total actual cost. GP incl. Risk = EAC Gross Profit + Risk Contingency (Budget); its % is over contract value excl. VAT.</div>
+    <div class="pflegend">GP: Gross Profit | BAC: Budget at Completion | EAC: Estimate Cost At Completion | EV: Earned Value (Selling) | CPI: Cost Performance Index | VAC: Variance at Completion | BCWP: Budgeted Cost of Work Performed | AC: Actual Cost | CV: Cost Variance (BCWP − AC)</div>
+    <div class="pfnote">All figures are taken from the P&amp;L reports. Total GP % and progress are weighted by contract value; total CPI = total BCWP / total actual cost. BAC excl. Sponsorship = Current Budget Direct + Current Budget In-Direct. GP + Risk = EAC Gross Profit + Risk Contingency; its % is over contract value excl. VAT.</div>
   </div></div>`;
 }
 function renderCK(ps){
@@ -1005,7 +1003,7 @@ async function exportExcel(){
   const img = sheet.querySelector(".logo img");
   if (img){ const id = wb.addImage({ base64: img.src, extension: "jpeg" }); ws.addImage(id, { tl: { col: ncol - 2, row: 0 }, ext: { width: 130, height: 58 } }); }
   // table
-  const start = 7; let r = start; const merged = new Set();
+  const start = 7; let r = start; const merged = new Set(), spans = [];
   for (const tr of rows){
     let c = 1, lines = 1;
     const hd = tr.classList.contains("hd"), tot = tr.classList.contains("tot"), ph = tr.classList.contains("ph"), xo = tr.classList.contains("xo");
@@ -1038,14 +1036,22 @@ async function exportExcel(){
       if (f) cell.fill = fill(f);
       if (cs > 1){ ws.mergeCells(r, c, r, c + cs - 1); for (let i = 1; i < cs; i++) merged.add(r + ":" + (c + i)); }
       const parts = text.split("\n"); lines = Math.max(lines, parts.length);
-      if (cs === 1) widths[c - 1] = Math.max(widths[c - 1], ...parts.map(s => s.length * (hd ? 1.05 : 1.1) + 2));
+      const fx = hd ? 1.1 : tot || ph || cell.font.bold ? 1.3 : 1.15, need = Math.max(...parts.map(s => s.length * fx + 3));
+      if (cs === 1) widths[c - 1] = Math.max(widths[c - 1], need); else spans.push([c - 1, cs, need]);
       c += cs;
     }
-    ws.getRow(r).height = lines > 1 ? lines * 14 + 4 : 18;
+    ws.getRow(r).height = lines > 1 ? lines * 15 + 6 : tot ? 24 : 20;
     r++;
   }
-  widths.forEach((w, i) => ws.getColumn(i + 1).width = Math.min(Math.round(w), isCk && i === 0 ? 44 : 34));
+  spans.forEach(([i, cs, need]) => { const have = widths.slice(i, i + cs).reduce((a, b) => a + b, 0); if (have < need) widths[i + cs - 1] += need - have; });
+  widths.forEach((w, i) => ws.getColumn(i + 1).width = Math.min(Math.ceil(w), isCk && i === 0 ? 44 : 40));
   ws.pageSetup.printTitlesRow = start + ":" + start;
+  const leg = sheet.querySelector(".pflegend");
+  if (leg){
+    r++; ws.mergeCells(r, 1, r, ncol);
+    Object.assign(ws.getCell(r, 1), { value: leg.innerText.trim(), font: { name: "Arial", size: 10, bold: true, color: { argb: "FF0C1F5C" } }, alignment: { wrapText: true, vertical: "middle" } });
+    ws.getRow(r).height = 30;
+  }
   const note = sheet.querySelector(".pfnote");
   if (note){
     r++; ws.mergeCells(r, 1, r, ncol);
