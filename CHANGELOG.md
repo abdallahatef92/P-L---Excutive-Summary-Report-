@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.2.0 - 2026-11-16
+- Portfolio: new **Budgeted Gross Profit** amount column (Current Budgeted Gross Profit from the P&L), with total. Included in the Excel export.
+
 ## 1.1.0 — 2026-11-15
 - Check report: BAC = P&L Current Budget Direct + Current Budget In-Direct.
 - Executive Summary: Risk is read when labelled "Risk", "Risk Contingency (Budget)" or "Contingency" (SouthMED, Terrazzo, West Bay).

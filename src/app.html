@@ -695,7 +695,7 @@ function renderPF(ps){
       if (!latest || new Date(p.pl.date) > new Date(latest)) latest = p.pl.date;
       const st = g(/^expected project status/i);
       return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td>${esc(p.pl.client)}</td>
-        <td class="v">${fmt(B)}</td><td class="v">${fmt(bud)}</td><td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
+        <td class="v">${fmt(B)}</td><td class="v">${fmt(bud)}</td><td class="v ${cls(bgp)}">${fmt(bgp)}</td><td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
         <td class="v">${fmt(eac)}</td><td class="v ${cls(gp)}">${fmt(gp)}</td><td class="v b ${cls(gp)}">${esc(g(/^eac gross profit %/i))}</td><td class="v">${fmt(rk)}</td><td class="v ${cls(gr)}">${fmt(gr)}</td><td class="v b ${cls(gr)}">${B ? pct(gr / B) : ""}</td>
         <td class="v ${cls(vr)}">${fmt(vr)}</td><td class="v">${esc(g(/^progress till/i))}</td><td class="v">${esc(g(/^current cpi/i))}</td>
         
@@ -709,7 +709,7 @@ function renderPF(ps){
   }).join("");
   const over = ps.filter(p => p.pl && /over/i.test(plGet(p.pl, /^expected project status/i))).length;
   const tot = T.k ? `<tr class="tot"><td></td><td class="pn" colspan="2">Total (${T.k} project${T.k > 1 ? "s" : ""})</td>
-      <td class="v">${fmt(T.B)}</td><td class="v">${fmt(T.bud)}</td><td class="v">${pct(T.bgp / T.B)}</td>
+      <td class="v">${fmt(T.B)}</td><td class="v">${fmt(T.bud)}</td><td class="v ${cls(T.bgp)}">${fmt(T.bgp)}</td><td class="v">${pct(T.bgp / T.B)}</td>
       <td class="v">${fmt(T.eac)}</td><td class="v ${cls(T.gp)}">${fmt(T.gp)}</td><td class="v ${cls(T.gp)}">${pct(T.gp / T.B)}</td><td class="v">${fmt(T.rk)}</td><td class="v ${cls(T.gr)}">${fmt(T.gr)}</td><td class="v ${cls(T.gr)}">${pct(T.gr / T.B)}</td>
       <td class="v ${cls(T.vr)}">${fmt(T.vr)}</td><td class="v">${pct(T.C / T.B)}</td><td class="v">${T.ac ? (T.bcwp / T.ac).toFixed(2) : ""}</td>
       <td></td><td class="c">${over ? over + " over" : ""}</td></tr>` : "";
@@ -717,7 +717,7 @@ function renderPF(ps){
     <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Portfolio Summary</div>${LOGO}</div>
     <div class="pfdate">${latest ? "Report Date: <b>" + esc(latest) + "</b>" : ""}</div>
     <table class="pft">
-            <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>excl. VAT</th><th>Total Current<br>Budget</th><th>Budgeted<br>GP %</th>
+            <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>excl. VAT</th><th>Total Current<br>Budget</th><th>Budgeted<br>Gross Profit</th><th>Budgeted<br>GP %</th>
         <th>EAC<br>(excl. Spons.)</th><th>EAC Gross<br>Profit</th><th>EAC<br>GP %</th><th>Risk<br>Contingency</th><th>GP incl.<br>Risk</th><th>GP incl.<br>Risk %</th><th>Profit Var.<br>vs Budget</th><th>Progress</th><th>CPI</th>
         <th>Expected<br>Finish</th><th>Status @<br>Completion</th></tr>
       ${rows}${tot}
