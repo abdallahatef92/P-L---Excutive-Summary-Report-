@@ -294,6 +294,7 @@ td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#df
 .sheet .ckt td.st{width:60px}
 .negv{color:#c00000!important}
 </style>
+<style>.pver{display:none}@media print{.pver{display:block;text-align:right;font:9px Arial,Helvetica,sans-serif;color:#8a93a3;margin-top:6px}}</style>
 <style id="pagestyle"></style>
 </head>
 <body>
@@ -856,7 +857,8 @@ function fitScreen(){
   sh.style.setProperty("--sz", Math.min(1, av / sh.offsetWidth).toFixed(4));
 }
 addEventListener("resize", () => { clearTimeout(fitScreen.t); fitScreen.t = setTimeout(fitScreen, 120); });
-function render(){ renderInner(); markNegatives($("main")); fitPrint(); fitScreen(); }
+function addVer(){ const v = document.querySelector(".ver"); $("main").querySelectorAll(".sheet").forEach(sh => { if (!sh.querySelector(".pver")) sh.insertAdjacentHTML("beforeend", `<div class="pver">Project Reports ${esc(v ? v.textContent.trim() : "")}</div>`); }); }
+function render(){ renderInner(); addVer(); markNegatives($("main")); fitPrint(); fitScreen(); }
 function renderInner(){
   const ps = projects();
   if (state.tab === "ck" && !$("ckbtn")) state.tab = "pl";
@@ -951,7 +953,7 @@ async function exportExcel(){
     views: [{ showGridLines: false }],
     pageSetup: { paperSize: 9, orientation: isCk ? "portrait" : "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0,
       horizontalCentered: true, margins: { left: 0.3, right: 0.3, top: 0.45, bottom: 0.5, header: 0.2, footer: 0.25 } },
-    headerFooter: { oddFooter: "&L&8" + title.replace(/&/g, "&&") + "&R&8Page &P of &N" } });
+    headerFooter: { oddFooter: "&L&8" + title.replace(/&/g, "&&") + "&C&8Project Reports " + (document.querySelector(".ver") || {}).textContent + "&R&8Page &P of &N" } });
   const rows = [...tbl.rows];
   const ncol = Math.max(...rows.map(r => [...r.cells].reduce((s, c) => s + c.colSpan, 0)));
   const TNR = "Times New Roman", thin = { style: "thin", color: { argb: "FF000000" } };

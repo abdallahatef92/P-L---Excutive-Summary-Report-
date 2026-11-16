@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.5.5 - 2026-11-16
+- App version printed at the bottom of every printed / PDF report and in the Excel footer.
+
 ## 1.5.4 - 2026-11-16
 - Portfolio: all cells vertically centred (CPI badges were sitting at the top of tall rows).
 
