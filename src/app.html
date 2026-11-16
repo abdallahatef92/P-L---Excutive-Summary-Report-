@@ -243,10 +243,10 @@ body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
 .kc{border:1px solid #e1e5ec;border-left:5px solid #0c1f5c;border-radius:8px;padding:8px 12px;background:#fafbfc}
 .kc .l{font-size:13px;color:#5b6577;text-transform:uppercase;letter-spacing:.5px;font-weight:600}.kc .kv{font-size:22px;font-weight:700;color:#0c1f5c;margin-top:2px}
 .kc .s{font-size:13px;color:#5b6577}.kc.good{border-left-color:#2e7d32}.kc.bad{border-left-color:#c62828}.kc.bad .kv,.kc .kv .negv{color:#c62828}
-.sheet.pf .pft{border-collapse:collapse;font-size:14px;table-layout:auto;width:100%}
+.sheet.pf .pft{border-collapse:collapse;font-size:15.5px;table-layout:auto;width:100%}
 .sheet.pf .pft td,.sheet.pf .pft th{border:0;border-bottom:1px solid #e3e6ec;padding:7px 5px;line-height:1.2;white-space:nowrap}
 .sheet.pf .pft td.pn,.sheet.pf .pft td.cl{white-space:normal;max-width:118px;min-width:70px}
-.sheet.pf .pft tr.hd th{background:#2f4a8a;color:#fff;font-weight:600;text-align:center;vertical-align:middle;font-size:13px;padding:6px 5px;border-left:1px solid #ffffff40;border-bottom:0}
+.sheet.pf .pft tr.hd th{background:#2f4a8a;color:#fff;font-weight:600;text-align:center;vertical-align:middle;font-size:14px;padding:6px 5px;border-left:1px solid #ffffff40;border-bottom:0}
 .sheet.pf .pft tr.grp th{background:#0c1f5c;text-transform:uppercase;letter-spacing:.5px;font-size:12px;border-left:2px solid #fff}
 .sheet.pf .pft td{background:#fff}
 .sheet.pf .pft td.v{text-align:right;font-variant-numeric:tabular-nums}
@@ -257,16 +257,16 @@ body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
 .sheet.pf .pft td.sep,.sheet.pf .pft th.sep{border-left:2px solid #c9d0dc}.sheet.pf .pft tr.grp th.sep{border-left:2px solid #fff}
 .sheet.pf .pft tr[data-k]:nth-child(even) td{background:#f4f5f7}
 .sheet.pf .pft td.st{text-align:center}
-.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:700;background:#fff1d6;color:#8a5a00}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:13px;font-weight:700;background:#fff1d6;color:#8a5a00}
 td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#dff3e4;color:#1b6e2f}
 .chip{display:inline-block;min-width:44px;padding:2px 6px;border-radius:5px;font-weight:700}
 .chip.bad{background:#fde3e3;color:#b71c1c}.chip.warn{background:#fff1d6;color:#8a5a00}.chip.good{background:#dff3e4;color:#1b6e2f}
-.sheet.pf .pft td.pg{position:relative;min-width:62px;padding-bottom:12px}
+.sheet.pf .pft td.pg{position:relative;width:150px;min-width:150px;padding-bottom:12px}
 .sheet.pf .pft td.pg i{position:absolute;left:8px;right:8px;bottom:6px;height:6px;border-radius:3px;background:linear-gradient(90deg,#5b7fc4 var(--pg),#e3e8f1 var(--pg))}
 .sheet.pf .pft tr[data-k]{cursor:pointer}
 .sheet.pf .pft tr[data-k]:hover td{background:#e9eef7}
-.sheet.pf .pft tr.tot td{background:#e8ecf3;font-weight:700;border-top:2px solid #0c1f5c;border-bottom:2px solid #0c1f5c;font-size:14.5px;color:#0c1f5c}
-.sheet .pflegend{width:0;min-width:100%;line-height:1.5;margin-top:10px;font-size:12.5px;color:#3b4456}.pflegend b{color:#0c1f5c}
+.sheet.pf .pft tr.tot td{background:#e8ecf3;font-weight:700;border-top:2px solid #0c1f5c;border-bottom:2px solid #0c1f5c;font-size:16px;color:#0c1f5c}
+.sheet .pflegend{width:0;min-width:100%;line-height:1.5;margin-top:10px;font-size:13.5px;color:#3b4456}.pflegend b{color:#0c1f5c}
 .pfnote{width:0;min-width:100%;font-size:11.5px;color:#5b6577;margin-top:8px;line-height:1.4}
 @media screen{.sheet.pf{zoom:var(--sz,1);margin:0 auto}}
 @media print{.sheet.pf{width:max-content}.sheet.pf *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
@@ -809,7 +809,7 @@ function renderCK(ps){
 function fitPrint(){
   const el = document.querySelector(".sheet"); if (!el) return;
   const ex = el.classList.contains("ex"), pf = el.classList.contains("pf"), mm = 96 / 25.4;
-  if (pf){ el.style.setProperty("--pz", (Math.min((297 - 16) * mm / el.offsetWidth, (210 - 16) * mm / el.offsetHeight) * 0.985).toFixed(4)); return; }
+  if (pf){ el.style.setProperty("--pz", (Math.min((420 - 16) * mm / el.offsetWidth, (297 - 16) * mm / el.offsetHeight) * 0.985).toFixed(4)); return; }
   const pw = ((ex ? 420 : 210) - 16) * mm, ph = (297 - 16) * mm;
   let W = ex ? 1240 : 800;
   el.style.removeProperty("--pw");
@@ -860,7 +860,7 @@ function renderInner(){
   if (state.tab === "ck" && !$("ckbtn")) state.tab = "pl";
   if (!ps.find(p => p.key === state.sel)) state.sel = ps.length ? ps[0].key : null;
   renderSide(ps);
-  $("pagestyle").textContent = `@page{size:${state.tab === "ex" ? "A3 landscape" : state.tab === "pf" ? "A4 landscape" : "A4 portrait"};margin:0}`;
+  $("pagestyle").textContent = `@page{size:${state.tab === "ex" || state.tab === "pf" ? "A3 landscape" : "A4 portrait"};margin:0}`;
   $("xlsx").hidden = !(state.tab === "pf" || state.tab === "ck");
   const sel = $("psel");
   sel.disabled = !ps.length || state.tab === "pf" || state.tab === "ck";
@@ -1027,7 +1027,23 @@ async function exportExcel(){
     r++;
   }
   spans.forEach(([i, cs, need]) => { const have = widths.slice(i, i + cs).reduce((a, b) => a + b, 0); if (have < need) widths[i + cs - 1] += need - have; });
-  widths.forEach((w, i) => ws.getColumn(i + 1).width = Math.min(Math.ceil(w), isCk ? (i === 0 ? 44 : 40) : 24));
+  if (isCk) widths.forEach((w, i) => ws.getColumn(i + 1).width = Math.min(Math.ceil(w), i === 0 ? 44 : 40));
+  else { // AutoFit: measure every cell's displayed text in its own font, like Excel's column AutoFit
+    const cx = document.createElement("canvas").getContext("2d"), fit = Array(ncol).fill(0);
+    const shown = c => { const v = c.value; if (v == null) return ""; if (typeof v === "number"){ const f = c.numFmt || "";
+        if (f.includes("%")) return (v * 100).toFixed((f.split(".")[1] || "").replace(/[^0]/g, "").length) + "%" + (v < 0 ? "()" : "");
+        const d = f.includes(".") ? (f.split(".")[1] || "").replace(/[^0]/g, "").length / 2 : 0;
+        return Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }) + (v < 0 ? "()" : ""); }
+      return String(v.richText ? v.richText.map(x => x.text).join("") : v); };
+    for (let rr = start; rr < r; rr++) for (let cc = 1; cc <= ncol; cc++){
+      const c = ws.getCell(rr, cc); if (c.isMerged && c.master.address !== c.address) continue;
+      if (c.isMerged) continue; // merged cells are ignored by AutoFit
+      cx.font = (c.font && c.font.bold ? "bold " : "") + ((c.font && c.font.size) || 11) * 96 / 72 + "px " + ((c.font && c.font.name) || "Calibri");
+      const px = Math.max(...shown(c).split("\n").map(t => cx.measureText(t).width));
+      fit[cc - 1] = Math.max(fit[cc - 1], px);
+    }
+    fit.forEach((px, i) => ws.getColumn(i + 1).width = Math.max(4, Math.round((px + 14) / 7 * 100) / 100));
+  }
   ws.pageSetup.printTitlesRow = start + ":" + (start + Math.max(nHd, 1) - 1);
   if (pgCells.length){
     const c0 = pgCells[0].replace(/\d+/, ""), rs = pgCells.map(a => +a.replace(/\D+/, ""));
