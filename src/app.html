@@ -234,32 +234,52 @@ body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
   .sheet.pl .shead{margin:0 0 26px}
 }
 /* ===== portfolio sheet ===== */
-.sheet.pf{width:max-content;min-width:1240px;padding:30px 40px 30px}
-.sheet.pf .shead{margin:0 0 18px}
-.pfdate{font-family:"Times New Roman",Times,serif;font-size:15px;margin-bottom:8px}
-.pft{border:2px solid #000;font-family:"Times New Roman",Times,serif;font-size:13.5px;table-layout:auto}
-.sheet .pft td{white-space:nowrap}
-.sheet.pf .pft tr:not(.hd):not(.tot):nth-child(odd) td{background:#e6ecf7}
-.sheet.pf .pft td.pg{background-image:linear-gradient(90deg,#7fa6dc var(--pg),transparent var(--pg))!important;background-repeat:no-repeat}
-.pfunit{float:right;font-style:italic;font-weight:700}
-.sheet .pflegend{margin-top:10px;font-size:12px;font-weight:700;color:#0c1f5c}
-.sheet .pft td,.sheet .pft th{border:1px solid #000;padding:4px 5px;line-height:1.2}
-.sheet .pft tr.hd th{background:#0c1f5c;color:#fff;font-weight:700;text-align:center;font-size:13px;padding:6px 4px}
-.sheet .pft td{background:#fff}
-.sheet .pft td.v{text-align:right;background:#f2f2f2;font-variant-numeric:tabular-nums;white-space:nowrap}
-.sheet .pft td.c{text-align:center}
-.sheet .pft td.pn{font-weight:700}
-.sheet .pft td.b{font-weight:700;color:#1b4aa0}
-.sheet .pft td.neg{color:#c00000}
-.sheet .pft td.st{text-align:center;color:#fff}
-.sheet .pft td.st.bad{background:#d0432a}.sheet .pft td.st.good{background:#2e9e5b}.sheet .pft td.st.warn{background:#d99a1c}
-.sheet .pft tr[data-k]{cursor:pointer}
-.sheet .pft tr[data-k]:hover td{background:#eaf0fb}
-.sheet .pft tr[data-k]:hover td.st.bad{background:#d0432a}.sheet .pft tr[data-k]:hover td.st.good{background:#2e9e5b}
-.sheet .pft tr.xo td{color:#555;font-style:italic}
-.sheet .pft tr.tot td{border-top:3px solid #000;font-weight:700;background:#dde4f2}
-.pfnote{width:0;min-width:100%;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#444;margin-top:10px;line-height:1.4}
-@media print{.sheet.pf{width:max-content;min-width:1240px}}
+.sheet.pf{width:max-content;min-width:1240px;padding:28px 34px 26px;font-family:"Segoe UI",Arial,sans-serif;color:#1d2433}
+.pfhead{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #0c1f5c;padding-bottom:12px}
+.pfhead .co{font-size:14px;color:#5b6577}.pfhead .ttl{font-size:30px;font-weight:700;color:#0c1f5c;margin:0;text-align:left}
+.pfr{display:flex;align-items:flex-end;gap:26px}.pfr .logo{position:static;margin:0}.pfr .logo img{height:78px;width:auto}
+.pfhead .pfdate{font-size:15px;color:#5b6577;text-align:right;line-height:1.35}.pfhead .pfdate b{color:#0c1f5c;font-size:17px}
+.pfk{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:18px 0}
+.kc{border:1px solid #e1e5ec;border-left:5px solid #0c1f5c;border-radius:8px;padding:10px 14px;background:#fafbfc}
+.kc .l{font-size:13px;color:#5b6577;text-transform:uppercase;letter-spacing:.5px;font-weight:600}.kc .kv{font-size:26px;font-weight:700;color:#0c1f5c;margin-top:2px}
+.kc .s{font-size:13px;color:#5b6577}.kc.good{border-left-color:#2e7d32}.kc.bad{border-left-color:#c62828}.kc.bad .kv,.kc .kv .negv{color:#c62828}
+.sheet.pf .pft{border-collapse:collapse;font-size:15px;table-layout:auto;width:100%}
+.sheet.pf .pft td,.sheet.pf .pft th{border:0;border-bottom:1px solid #e3e6ec;padding:9px 8px;line-height:1.25;white-space:nowrap}
+.sheet.pf .pft tr.hd th{background:#2f4a8a;color:#fff;font-weight:600;text-align:center;vertical-align:middle;font-size:14px;border-left:1px solid #ffffff40;border-bottom:0}
+.sheet.pf .pft tr.grp th{background:#0c1f5c;text-transform:uppercase;letter-spacing:.8px;border-left:2px solid #fff}
+.sheet.pf .pft td{background:#fff}
+.sheet.pf .pft td.v{text-align:right;font-variant-numeric:tabular-nums}
+.sheet.pf .pft td.c{text-align:center}
+.sheet.pf .pft td.pn{font-weight:700;color:#0c1f5c}.sheet.pf .pft td.cl{color:#5b6577}
+.sheet.pf .pft td.b{font-weight:700}
+.sheet.pf .pft td.neg,.sheet.pf .pft .negv{color:#c62828}
+.sheet.pf .pft td.sep,.sheet.pf .pft th.sep{border-left:2px solid #c9d0dc}.sheet.pf .pft tr.grp th.sep{border-left:2px solid #fff}
+.sheet.pf .pft tr[data-k]:nth-child(even) td{background:#f4f5f7}
+.sheet.pf .pft td.st{text-align:center}
+.pill{display:inline-block;padding:3px 12px;border-radius:12px;font-size:13px;font-weight:700;background:#fff1d6;color:#8a5a00}
+td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#dff3e4;color:#1b6e2f}
+.chip{display:inline-block;min-width:44px;padding:2px 6px;border-radius:5px;font-weight:700}
+.chip.bad{background:#fde3e3;color:#b71c1c}.chip.warn{background:#fff1d6;color:#8a5a00}.chip.good{background:#dff3e4;color:#1b6e2f}
+.sheet.pf .pft td.pg{position:relative;min-width:110px;padding-bottom:14px}
+.sheet.pf .pft td.pg i{position:absolute;left:8px;right:8px;bottom:6px;height:6px;border-radius:3px;background:linear-gradient(90deg,#5b7fc4 var(--pg),#e3e8f1 var(--pg))}
+.sheet.pf .pft tr[data-k]{cursor:pointer}
+.sheet.pf .pft tr[data-k]:hover td{background:#e9eef7}
+.sheet.pf .pft tr.tot td{background:#e8ecf3;font-weight:700;border-top:2px solid #0c1f5c;border-bottom:2px solid #0c1f5c;font-size:16px;color:#0c1f5c}
+.sheet .pflegend{margin-top:14px;font-size:13.5px;color:#3b4456}.pflegend b{color:#0c1f5c}
+.pfnote{width:0;min-width:100%;font-size:11.5px;color:#5b6577;margin-top:8px;line-height:1.4}
+@media print{.sheet.pf{width:max-content;min-width:1240px}.sheet.pf *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.sheet.ck .pfdate{font-family:"Times New Roman",Times,serif;font-size:15px;margin-bottom:8px}
+.sheet.ck .pft{border:2px solid #000;font-family:"Times New Roman",Times,serif;font-size:13.5px;border-collapse:collapse}
+.sheet.ck .pft td,.sheet.ck .pft th{border:1px solid #000;padding:4px 5px;line-height:1.2;white-space:nowrap}
+.sheet.ck .pft tr.hd th{background:#0c1f5c;color:#fff;font-weight:700;text-align:center;font-size:13px;padding:6px 4px}
+.sheet.ck .pft td{background:#fff}
+.sheet.ck .pft td.v{text-align:right;background:#f2f2f2;font-variant-numeric:tabular-nums}
+.sheet.ck .pft td.c{text-align:center}
+.sheet.ck .pft td.b{font-weight:700;color:#1b4aa0}
+.sheet.ck .pft td.neg{color:#c00000}
+.sheet.ck .pft td.st{text-align:center;color:#fff}
+.sheet.ck .pft td.st.bad{background:#d0432a}.sheet.ck .pft td.st.good{background:#2e9e5b}.sheet.ck .pft td.st.warn{background:#d99a1c}
+.sheet.ck .pft tr.tot td{border-top:3px solid #000;font-weight:700;background:#dde4f2}
 .ckbtn{margin-top:14px;width:100%;padding:10px;border-radius:9px;border:1px dashed #6f86b8;background:transparent;color:#fff;font:inherit;font-weight:600;cursor:pointer}
 .ckbtn:hover{background:#1e3a72}
 .sheet .ckt{width:100%}
@@ -682,11 +702,14 @@ function renderEX(ex, ps){
 function renderPF(ps){
   const n = v => { const x = num(v); return isNaN(x) ? null : x; };
   const fmt = v => { if (v == null) return ""; const t = Math.abs(v / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M"; return v < 0 && t !== "0.00M" ? `<span class="negv">(${t})</span>` : t; };
+  const M = (v, x = "") => `<td class="v ${x} ${cls(v)}"${v == null ? "" : ` data-r="${Math.round(v)}"`}>${fmt(v)}</td>`;
   const pct = v => v == null || !isFinite(v) ? "" : (v * 100).toFixed(2) + "%";
-  const pg = t => { const x = num(t); const w = isNaN(x) ? 0 : Math.max(0, Math.min(100, x > 1.5 ? x : x * 100)); return `<td class="v pg" style="--pg:${w.toFixed(1)}%">${esc(t)}</td>`; };
+  const pg = t => { const x = num(t); const w = isNaN(x) ? 0 : Math.max(0, Math.min(100, x > 1.5 ? x : x * 100)); return `<td class="v pg" style="--pg:${w.toFixed(1)}%"><span>${esc(t)}</span><i></i></td>`; };
+  const cpi = t => `<td class="v c cpi">${t ? `<span class="chip ${cpiKind(t)}">${esc(t)}</span>` : ""}</td>`;
   const T = { B0:0, B:0, bac:0, bgp:0, eac:0, vr:0, gp:0, rk:0, gr:0, C:0, bcwp:0, ac:0, cv:0, k:0 };
   let latest = "";
-  const rows = ps.filter(p => p.pl).map((p, i) => {
+  const fd = p => { const d = new Date(plGet(p.pl, /^expected finish date/i)); return isNaN(d) ? Infinity : +d; };
+  const rows = ps.filter(p => p.pl).sort((x, y) => fd(x) - fd(y)).map((p, i) => {
     const g = re => plGet(p.pl, re);
     const bd = n(g(/^current budget direct/i)), bi = n(g(/^current budget in-direct/i));
     const B0 = n(g(/^estimated current project value including/i)), B = n(g(/^estimated current project value without vat/i)),
@@ -699,32 +722,44 @@ function renderPF(ps){
     Object.entries({ B0, B, bac, bgp, eac, vr, gp, rk, gr, C, bcwp, ac, cv }).forEach(([k, v]) => { if (v != null) T[k] += v; });
     T.k++;
     if (!latest || new Date(p.pl.date) > new Date(latest)) latest = p.pl.date;
-    const st = g(/^expected project status/i);
-    return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td>${esc(p.pl.client)}</td>
-      <td class="v">${fmt(B0)}</td><td class="v">${fmt(B)}</td><td class="v">${fmt(bac)}</td><td class="v ${cls(bgp)}">${fmt(bgp)}</td><td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
-      <td class="v">${fmt(eac)}</td><td class="v ${cls(vr)}">${fmt(vr)}</td><td class="v ${cls(gp)}">${fmt(gp)}</td><td class="v b ${cls(gp)}">${esc(g(/^eac gross profit %/i))}</td>
-      <td class="v">${fmt(rk)}</td><td class="v ${cls(gr)}">${fmt(gr)}</td><td class="v b ${cls(gr)}">${B ? pct(gr / B) : ""}</td>
-      <td class="v">${fmt(C)}</td>${pg(g(/^progress till/i))}<td class="v">${fmt(bcwp)}</td><td class="v">${fmt(ac)}</td><td class="v ${cls(cv)}">${fmt(cv)}</td><td class="v">${esc(g(/^current cpi/i))}</td>
-      <td class="c">${esc(g(/^expected finish date/i))}</td><td class="st ${st ? statusKind(st) : ""}">${esc(st)}</td></tr>`;
+    const st = g(/^expected project status/i), gpp = g(/^eac gross profit %/i), grp = B ? pct(gr / B) : "";
+    return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td class="cl">${esc(p.pl.client)}</td>
+      ${M(B0, "sep")}${M(B)}${M(bac, "sep")}${M(bgp)}<td class="v">${esc(g(/^current budgeted gross profit %/i))}</td>
+      ${M(eac, "sep")}${M(vr)}${M(gp, "b")}<td class="v b ${cls(gpp)}">${esc(gpp)}</td>
+      ${M(rk, "sep")}${M(gr)}<td class="v b ${cls(grp)}">${grp}</td>
+      ${M(C, "sep")}${pg(g(/^progress till/i))}${M(bcwp)}${M(ac)}${M(cv)}${cpi(g(/^current cpi/i))}
+      <td class="c sep">${esc(g(/^expected finish date/i))}</td><td class="st ${st ? statusKind(st) : ""}">${st ? `<span class="pill">${esc(st)}</span>` : ""}</td></tr>`;
   }).join("");
   const over = ps.filter(p => p.pl && /over/i.test(plGet(p.pl, /^expected project status/i))).length;
+  const tcpi = T.ac ? (T.bcwp / T.ac).toFixed(2) : "";
   const tot = T.k ? `<tr class="tot"><td></td><td class="pn" colspan="2">Total (${T.k} project${T.k > 1 ? "s" : ""})</td>
-      <td class="v">${fmt(T.B0)}</td><td class="v">${fmt(T.B)}</td><td class="v">${fmt(T.bac)}</td><td class="v ${cls(T.bgp)}">${fmt(T.bgp)}</td><td class="v">${pct(T.bgp / T.B)}</td>
-      <td class="v">${fmt(T.eac)}</td><td class="v ${cls(T.vr)}">${fmt(T.vr)}</td><td class="v ${cls(T.gp)}">${fmt(T.gp)}</td><td class="v ${cls(T.gp)}">${pct(T.gp / T.B)}</td>
-      <td class="v">${fmt(T.rk)}</td><td class="v ${cls(T.gr)}">${fmt(T.gr)}</td><td class="v ${cls(T.gr)}">${pct(T.gr / T.B)}</td>
-      <td class="v">${fmt(T.C)}</td>${pg(pct(T.C / T.B))}<td class="v">${fmt(T.bcwp)}</td><td class="v">${fmt(T.ac)}</td><td class="v ${cls(T.cv)}">${fmt(T.cv)}</td><td class="v">${T.ac ? (T.bcwp / T.ac).toFixed(2) : ""}</td>
-      <td></td><td class="c">${over ? over + " over" : ""}</td></tr>` : "";
+      ${M(T.B0, "sep")}${M(T.B)}${M(T.bac, "sep")}${M(T.bgp)}<td class="v">${pct(T.bgp / T.B)}</td>
+      ${M(T.eac, "sep")}${M(T.vr)}${M(T.gp)}<td class="v ${cls(T.gp)}">${pct(T.gp / T.B)}</td>
+      ${M(T.rk, "sep")}${M(T.gr)}<td class="v ${cls(T.gr)}">${pct(T.gr / T.B)}</td>
+      ${M(T.C, "sep")}${pg(pct(T.C / T.B))}${M(T.bcwp)}${M(T.ac)}${M(T.cv)}<td class="v c">${tcpi}</td>
+      <td class="sep"></td><td class="c">${over ? over + " over" : ""}</td></tr>` : "";
+  const card = (l, v, sub, k = "") => `<div class="kc ${k}"><div class="l">${l}</div><div class="kv">${v}</div><div class="s">${sub}</div></div>`;
+  const kpis = T.k ? `<div class="pfk">
+      ${card("Contract Value excl. VAT", fmt(T.B), `${T.k} project${T.k > 1 ? "s" : ""}`)}
+      ${card("BAC excl. Sponsorship", fmt(T.bac), "Budgeted GP " + pct(T.bgp / T.B))}
+      ${card("EAC Gross Profit", fmt(T.gp), pct(T.gp / T.B) + " of contract", T.gp < 0 ? "bad" : "good")}
+      ${card("GP + Risk", fmt(T.gr), pct(T.gr / T.B) + " of contract", T.gr < 0 ? "bad" : "good")}
+      ${card("VAC", fmt(T.vr), "vs current budget", T.vr < 0 ? "bad" : "good")}
+      ${card("Portfolio CPI", tcpi, `${over} of ${T.k} over budget`, tcpi && +tcpi < 1 ? "bad" : "good")}
+    </div>` : "";
   return `<div class="sheetwrap"><div class="sheet pf">
-    <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Portfolio Summary</div>${LOGO}</div>
-    <div class="pfdate">${latest ? "Report Date: <b>" + esc(latest) + "</b>" : ""}<span class="pfunit">Amounts in EGP (M = millions)</span></div>
+    <div class="pfhead"><div><div class="co">ALSHOROUK · Cost Control Dep.</div><div class="ttl">Portfolio Summary</div></div>
+      <div class="pfr"><div class="pfdate">${latest ? "Report Date<br><b>" + esc(latest) + "</b><br>" : ""}<span class="pfunit">Amounts in EGP (M = millions)</span></div>${LOGO}</div></div>
+    ${kpis}
     <table class="pft">
-      <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>incl. VAT</th><th>Contract Value<br>excl. VAT</th><th>BAC excl.<br>Sponsorship</th><th>Budgeted<br>Gross Profit</th><th>Budgeted<br>GP %</th>
-        <th>EAC<br>(excl. Spons.)</th><th>VAC</th><th>EAC Gross<br>Profit</th><th>EAC<br>GP %</th><th>Risk<br>Contingency</th><th>GP +<br>Risk</th><th>GP +<br>Risk %</th>
-        <th>EV</th><th>Progress</th><th>BCWP</th><th>AC</th><th>CV</th><th>CPI</th><th>Expected<br>Finish</th><th>Status @<br>Completion</th></tr>
+      <tr class="hd grp"><th colspan="3">Project</th><th colspan="2" class="sep">Contract Value</th><th colspan="3" class="sep">Current Budget</th><th colspan="4" class="sep">Forecast at Completion</th><th colspan="3" class="sep">Risk</th><th colspan="6" class="sep">Performance to Date</th><th colspan="2" class="sep">Schedule</th></tr>
+      <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th class="sep">incl. VAT</th><th>excl. VAT</th><th class="sep">BAC excl.<br>Spons.</th><th>Budgeted<br>GP</th><th>GP %</th>
+        <th class="sep">EAC excl.<br>Spons.</th><th>VAC</th><th>EAC GP</th><th>GP %</th><th class="sep">Risk<br>Cont.</th><th>GP +<br>Risk</th><th>GP +<br>Risk %</th>
+        <th class="sep">EV</th><th>Progress</th><th>BCWP</th><th>AC</th><th>CV</th><th>CPI</th><th class="sep">Expected<br>Finish</th><th>Status @<br>Completion</th></tr>
       ${rows}${tot}
     </table>
-    <div class="pflegend">GP: Gross Profit | BAC: Budget at Completion | EAC: Estimate Cost At Completion | EV: Earned Value (Selling) | CPI: Cost Performance Index | VAC: Variance at Completion | BCWP: Budgeted Cost of Work Performed | AC: Actual Cost | CV: Cost Variance (BCWP − AC)</div>
-    <div class="pfnote">All figures are taken from the P&amp;L reports. Total GP % and progress are weighted by contract value; total CPI = total BCWP / total actual cost. BAC excl. Sponsorship = Current Budget Direct + Current Budget In-Direct. GP + Risk = EAC Gross Profit + Risk Contingency; its % is over contract value excl. VAT.</div>
+    <div class="pflegend"><b>GP</b>: Gross Profit · <b>BAC</b>: Budget at Completion · <b>EAC</b>: Estimate Cost At Completion · <b>EV</b>: Earned Value (Selling) · <b>CPI</b>: Cost Performance Index · <b>VAC</b>: Variance at Completion · <b>BCWP</b>: Budgeted Cost of Work Performed · <b>AC</b>: Actual Cost · <b>CV</b>: Cost Variance (BCWP − AC)</div>
+    <div class="pfnote">All figures are taken from the P&amp;L reports, sorted by expected finish date. Total GP % and progress are weighted by contract value; total CPI = total BCWP / total actual cost. BAC excl. Sponsorship = Current Budget Direct + Current Budget In-Direct. GP + Risk = EAC Gross Profit + Risk Contingency; its % is over contract value excl. VAT.</div>
   </div></div>`;
 }
 function renderCK(ps){
@@ -916,15 +951,16 @@ async function exportExcel(){
   ws.mergeCells(4, 1, 4, ncol);
   Object.assign(ws.getCell(4, 1), { value: title, font: { name: "Arial", bold: true, size: 16 }, alignment: { horizontal: "center", vertical: "middle" } });
   ws.getRow(4).height = 30;
-  const sub = sheet.querySelector(".pfdate"); ws.getCell(5, 1).value = sub ? sub.innerText.replace((sub.querySelector(".pfunit") || {}).innerText || "", "").trim() : "";
+  const sub = sheet.querySelector(".pfdate"); const sb = sub && sub.querySelector("b"); ws.getCell(5, 1).value = !sub ? "" : isCk || !sb ? sub.innerText.trim() : "Report Date: " + sb.innerText.trim();
   ws.getCell(5, 1).font = { name: TNR, size: 12, bold: true };
   const img = sheet.querySelector(".logo img");
   if (img){ const id = wb.addImage({ base64: img.src, extension: "jpeg" }); ws.addImage(id, { tl: { col: ncol - 2, row: 0 }, ext: { width: 130, height: 58 } }); }
   // table
-  const start = 7; let r = start; const merged = new Set(), spans = [], pgCells = [];
+  const start = 7; let r = start, di = 0; const merged = new Set(), spans = [], pgCells = [];
+  const FN = isCk ? TNR : "Calibri", nHd = rows.filter(x => x.classList.contains("hd")).length, lite = { style: "thin", color: { argb: "FFD9DDE5" } };
   for (const tr of rows){
     let c = 1, lines = 1;
-    const hd = tr.classList.contains("hd"), tot = tr.classList.contains("tot"), ph = tr.classList.contains("ph"), xo = tr.classList.contains("xo");
+    const hd = tr.classList.contains("hd"), grp = tr.classList.contains("grp"), tot = tr.classList.contains("tot"), ph = tr.classList.contains("ph"), xo = tr.classList.contains("xo");
     for (const td of tr.cells){
       while (merged.has(r + ":" + c)) c++;
       const cell = ws.getCell(r, c), cs = td.colSpan;
@@ -934,6 +970,8 @@ async function exportExcel(){
         const main = text.replace(small.innerText.trim(), "").trim();
         val = { richText: [{ text: main, font: { name: TNR, bold: true, size: 11 } }, { text: "\n" + small.innerText.trim(), font: { name: "Arial", size: 8, color: { argb: "FF555555" } } }] };
         lines = 2; text = main;
+      } else if (!hd && td.dataset.r){
+        val = +td.dataset.r; fmt = "#,##0;[Red](#,##0)"; text = "(" + Math.abs(val).toLocaleString("en-US") + ")";
       } else if (!hd){
         const m = text.match(/^(\()?(-)?([\d,]+(?:\.(\d+))?)(%|M)?\)?$/);
         if (m && /\d/.test(m[3])){
@@ -947,9 +985,23 @@ async function exportExcel(){
       }
       cell.value = val; if (fmt) cell.numFmt = fmt;
       const k = td.classList;
-      cell.font = { name: TNR, size: 11, bold: hd || tot || ph || k.contains("pn") || k.contains("lb") || k.contains("b"), italic: xo,
+      cell.font = { name: FN, size: 11, bold: hd || tot || ph || k.contains("pn") || k.contains("lb") || k.contains("b"), italic: xo,
         color: { argb: hd || k.contains("st") && /bad|good|warn/.test(td.className) ? "FFFFFFFF" : k.contains("neg") ? "FFC00000" : k.contains("b") ? "FF1B4AA0" : xo ? "FF555555" : "FF000000" } };
       cell.alignment = { vertical: "middle", wrapText: hd || !!small, horizontal: hd || k.contains("c") || k.contains("st") ? "center" : fmt ? "right" : "left" };
+      if (!isCk){
+        const navy = { style: "medium", color: { argb: "FF0C1F5C" } }, sep = k.contains("sep") ? { style: "medium", color: { argb: "FFC9D0DC" } } : lite;
+        cell.border = hd ? { top: lite, left: lite, bottom: lite, right: lite } : { top: tot ? navy : lite, bottom: tot ? navy : lite, left: sep, right: lite };
+        if (!hd && !tot) cell.font.color = { argb: k.contains("neg") ? "FFC62828" : k.contains("st") ? "FFFFFFFF" : k.contains("pn") ? "FF0C1F5C" : k.contains("cl") ? "FF5B6577" : "FF1D2433" };
+        if (tot) cell.font.color = { argb: k.contains("neg") ? "FFC62828" : "FF0C1F5C" };
+        const pf = hd ? (grp ? "0C1F5C" : "2F4A8A") : tot ? "E8ECF3" : k.contains("bad") ? "D0432A" : k.contains("good") ? "2E9E5B" : k.contains("warn") ? "D99A1C" : di % 2 ? "F4F5F7" : null;
+        if (pf) cell.fill = fill(pf);
+        if (k.contains("pg")) pgCells.push(cell.address);
+        if (cs > 1){ ws.mergeCells(r, c, r, c + cs - 1); for (let i = 1; i < cs; i++) merged.add(r + ":" + (c + i)); }
+        const parts = text.split("\n"); lines = Math.max(lines, parts.length);
+        const need = Math.max(...parts.map(s => s.length * (hd ? 1.1 : tot || cell.font.bold ? 1.25 : 1.12) + 3));
+        if (cs === 1) widths[c - 1] = Math.max(widths[c - 1], need); else spans.push([c - 1, cs, need]);
+        c += cs; continue;
+      }
       cell.border = { top: tot || ph ? { style: "medium" } : thin, left: thin, bottom: thin, right: thin };
       const f = hd ? "0C1F5C" : tot || ph ? "DDE4F2" : k.contains("bad") ? "D0432A" : k.contains("good") ? "2E9E5B" : k.contains("warn") ? "D99A1C" : k.contains("v") ? "F2F2F2" : null;
       if (f && !hd && !tot && !ph && k.contains("v") && !isCk && (r - start) % 2 === 0) cell.fill = fill("E6ECF7"); else if (f) cell.fill = fill(f);
@@ -960,12 +1012,13 @@ async function exportExcel(){
       if (cs === 1) widths[c - 1] = Math.max(widths[c - 1], need); else spans.push([c - 1, cs, need]);
       c += cs;
     }
-    ws.getRow(r).height = lines > 1 ? lines * 15 + 6 : tot ? 24 : 20;
+    ws.getRow(r).height = lines > 1 ? lines * 15 + 6 : tot ? 24 : hd ? 22 : 20;
+    if (!hd && !tot) di++;
     r++;
   }
   spans.forEach(([i, cs, need]) => { const have = widths.slice(i, i + cs).reduce((a, b) => a + b, 0); if (have < need) widths[i + cs - 1] += need - have; });
   widths.forEach((w, i) => ws.getColumn(i + 1).width = Math.min(Math.ceil(w), isCk && i === 0 ? 44 : 40));
-  ws.pageSetup.printTitlesRow = start + ":" + start;
+  ws.pageSetup.printTitlesRow = start + ":" + (start + Math.max(nHd, 1) - 1);
   if (pgCells.length){
     const c0 = pgCells[0].replace(/\d+/, ""), rs = pgCells.map(a => +a.replace(/\D+/, ""));
     ws.addConditionalFormatting({ ref: c0 + Math.min(...rs) + ":" + c0 + Math.max(...rs),
@@ -973,7 +1026,7 @@ async function exportExcel(){
         cfvo: [{ type: "num", value: 0 }, { type: "num", value: 1 }], color: { argb: "FF7FA6DC" } }] });
   }
   const unit = sheet.querySelector(".pfunit");
-  if (unit){ const uc = ws.getCell(5, ncol); uc.value = unit.innerText.trim(); uc.font = { name: TNR, size: 11, bold: true, italic: true }; uc.alignment = { horizontal: "right" }; }
+  if (unit){ const uc = ws.getCell(5, ncol); uc.value = "Amounts in EGP"; uc.font = { name: TNR, size: 11, bold: true, italic: true }; uc.alignment = { horizontal: "right" }; }
   const leg = sheet.querySelector(".pflegend");
   if (leg){
     r++; ws.mergeCells(r, 1, r, ncol);
