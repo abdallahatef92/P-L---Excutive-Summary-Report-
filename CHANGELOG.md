@@ -3,6 +3,10 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.6.1 - 2026-11-16
+- Analysis chart 1 (Profit bridge): project filter (All projects or one project); bars now cross zero correctly when profit turns negative.
+- Analysis chart 7: columns named Indirect % in Contract / Actual / At Completion, each with its formula in full; legend aligned to the same names.
+
 ## 1.6.0 - 2026-11-16
 - New **Analysis** tab (portfolio, from the P&L reports), two pages:
   - Profitability: profit bridge, VAC by project (Direct vs Indirect), margin erosion, overrun mix.
