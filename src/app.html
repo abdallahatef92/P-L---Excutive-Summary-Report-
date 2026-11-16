@@ -290,13 +290,14 @@ td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#df
 .ankp{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:12px 0}
 .ank{border:1px solid #e6e9ef;border-radius:10px;padding:10px 14px;background:linear-gradient(#fff,#fbfcfe)}.ank .l{font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:#667085;font-weight:600}
 .ank .v{font-size:24px;font-weight:700;color:#0c1f5c;margin-top:3px;font-variant-numeric:tabular-nums}.ank .v.neg,.ank .v .negv{color:#b42318}.ank .s{font-size:12px;color:#667085}
-.angrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.angrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.angrid>.anc{grid-column:span 2}.angrid>.anc.one{grid-column:span 1}
 .anc{border:1px solid #e6e9ef;border-radius:10px;padding:14px 16px 12px;min-width:0;break-inside:avoid}
 .anc h3{margin:0;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;color:#1d2433}.anc .n{font-size:11px;font-weight:700;color:#fff;background:#0c1f5c;border-radius:4px;padding:1px 6px}
 .anc .q{font-size:12.5px;color:#667085;margin:3px 0 2px}
 .anchart{height:380px;width:100%}
-.anc.wide{grid-column:1/-1}
-@media print{.anc.pbreak{break-before:page}}
+.sheet.an.anprint{width:2200px;max-width:none}.sheet.an.anprint .anchart{height:290px}.sheet.an.anprint table.anmx{font-size:12px}.sheet.an.anprint table.anmx td .c{padding:1px 0;margin:1px 2px}.sheet.an.anprint table.anmx th{padding:4px}.sheet.an.anprint .anc{padding:10px 14px 8px}
+
 .anc .ins{margin-top:6px;border-top:1px solid #e6e9ef;padding-top:8px;font-size:12.5px;line-height:1.45}.anc .ins b{color:#0c1f5c}
 .anc .ins::before{content:"KEY INSIGHT";font-size:10px;font-weight:700;letter-spacing:.9px;color:#fff;background:#3a6fc4;border-radius:3px;padding:1px 6px;margin-right:8px}
 table.anmx{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;margin-top:6px}
@@ -307,7 +308,7 @@ table.anmx th small{display:block;font-weight:400;font-size:10.5px;opacity:.85;m
 table.anmx th:first-child{text-align:left;border-radius:6px 0 0 0}table.anmx th:last-child{border-radius:0 6px 0 0}
 table.anmx td{padding:0;border:0;border-bottom:1px solid #fff;text-align:center;font-variant-numeric:tabular-nums;vertical-align:middle}
 table.anmx td.mn{text-align:left;font-weight:600;color:#0c1f5c;padding:0 8px;border-bottom:1px solid #eef0f4}
-table.anmx td .c{display:block;margin:2px 3px;padding:4px 0;border-radius:4px;font-weight:600}
+table.anmx td .c{display:block;margin:1px 2px;padding:3px 0;border-radius:4px;font-weight:600}
 table.anmx td .c.g.bad{color:#b42318}table.anmx td .c.g.ok{color:#2a8a57}
 table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
 .anlg{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:11.5px;color:#667085;margin-top:8px}.anlg b{font-weight:600;color:#1d2433}.anlg span{white-space:nowrap;display:inline-flex;align-items:center;gap:6px}.anlg i{display:inline-block;width:22px;height:10px;border-radius:2px;border:1px solid #0000000f}
@@ -841,7 +842,7 @@ function renderCK(ps){
 function fitPrint(){
   const el = document.querySelector(".sheet"); if (!el) return;
   const ex = el.classList.contains("ex"), pf = el.classList.contains("pf"), mm = 96 / 25.4;
-  if (el.classList.contains("an")){ el.style.setProperty("--pz", ((420 - 16) * mm / el.offsetWidth * 0.985).toFixed(4)); return; }
+  if (el.classList.contains("an")){ el.style.setProperty("--pz", (Math.min((420 - 16) * mm / el.offsetWidth, (297 - 16) * mm / el.offsetHeight) * 0.985).toFixed(4)); return; }
   if (pf){ el.style.setProperty("--pz", (Math.min((420 - 16) * mm / el.offsetWidth, (297 - 16) * mm / el.offsetHeight) * 0.985).toFixed(4)); return; }
   const pw = ((ex ? 420 : 210) - 16) * mm, ph = (297 - 16) * mm;
   let W = ex ? 1240 : 800;
@@ -997,18 +998,18 @@ function renderAN(ps){
     <div class="anlg"><b>Shading vs Indirect % in Contract:</b><span><i style="background:#eaf5ee"></i>At or below</span><span><i style="background:#fdeccc"></i>Up to +3 pts</span><span><i style="background:#f9c9a6"></i>+3 to +5 pts</span><span><i style="background:#f08c6c"></i>Above +5 pts</span></div>`;
   const body = card(1, "Profit bridge", (one ? esc(one.name) + ": " : "Portfolio: ") + "Budgeted GP to EAC GP, split into Direct and Indirect variance, then Risk Contingency added", ch("an1"),
       fv < 0 ? `Overruns take <b>${anM(-fv)}M</b> off budgeted profit; <b>${Math.round(fd / fv * 100)}%</b> comes from direct work. Risk contingency covers <b>${Math.round(fr / -fv * 100)}%</b> of the loss.` : `No net overrun${one ? " on this project" : " across the portfolio"}: variance adds <b>${anM(fv)}M</b> to budgeted profit.`, ctl)
-    + card(2, "VAC by project: Direct vs Indirect", "Variance at completion (EGP M); % inside each bar = share of that project's overrun", ch("an2"),
+    + card(2, "VAC by project: Direct vs Indirect", "Variance at completion (EGP M); hover a bar for the Direct / Indirect share", ch("an2"),
       (top.length ? `${anB(top)} account for <b>${Math.round(acc / tv * 100)}%</b> of the portfolio overrun. ` : "No project is forecast to overrun. ") + (indLed.length ? `Indirect is the bigger part at ${anB(indLed)}.` : ""))
     + card(3, "Margin erosion", "Current Budget GP % vs EAC GP %; sorted by erosion", ch("an3"),
       (flip.length ? `<b>${flip.length} project${flip.length > 1 ? "s" : ""}</b> move from a budgeted profit to a forecast loss. ` : "No project moves from budgeted profit to a forecast loss. ") + (ero ? `Largest erosion: <b>${esc(ero.name)}</b>, ${(ero.bgpPct - ero.gpPct).toFixed(1)} pts.` : ""))
     + card(4, "Cost efficiency (CPI)", "Distance of each project's CPI from 1.00; grey % beside each name = progress to date", ch("an5"),
       (locked.length ? `${anB(locked)} ${locked.length > 1 ? "are" : "is"} 80%+ complete with CPI below 0.95 – that loss is largely locked in. ` : "") + (recov.length ? `${anB(recov)} ${recov.length > 1 ? "are" : "is"} early with CPI below 1.00, so recovery there still pays.` : ""))
     + card(5, "Indirect cost ratios", "Indirect % in Contract · Indirect % Actual · Indirect % At Completion; sorted by gap", mx,
-      `<b>${above} of ${gaps.length}</b> projects have Indirect % At Completion above Indirect % in Contract.` + (gaps.length ? ` Biggest gaps: ${anB(gaps.slice(0, 3).map(d => d.name))}.` : ""), "", "wide pbreak")
-    + card(6, "Overrun still to come", "Remaining budget vs forecast cost to complete; projects below 70% progress", ch("an6"),
-      aheadTop.length ? `Most of the remaining overrun sits in ${anB(aheadTop)} – it has not been spent yet and is still avoidable.` : "No remaining overrun forecast on projects below 70% progress.")
+      `<b>${above} of ${gaps.length}</b> projects have Indirect % At Completion above Indirect % in Contract.` + (gaps.length ? ` Biggest gaps: ${anB(gaps.slice(0, 3).map(d => d.name))}.` : ""), "", "")
+    + card(6, "Overrun still to come", "Remaining budget vs cost to complete; projects below 70% progress", ch("an6"),
+      aheadTop.length ? `Most of the remaining overrun sits in ${anB(aheadTop)} – still avoidable.` : "No remaining overrun forecast on projects below 70% progress.", "", "one")
     + card(7, "Delay vs Indirect VAC", "Months of delay against indirect overrun", ch("an8"),
-      lateL.length ? `Most delayed: ${anB(lateL.slice(0, 3).map(d => d.name + " (" + Math.round(d.delay) + " months)"))}. Each month of delay costs roughly one month of budgeted site overheads.` : "No project is 6 months or more behind its contractual finish.");
+      lateL.length ? `Most delayed: ${anB(lateL.slice(0, 3).map(d => d.name + " (" + Math.round(d.delay) + " mo)"))}.` : "No project is 6 months or more behind its contractual finish.", "", "one");
   return `<div class="sheetwrap"><div class="sheet an">
     <div class="pfhead"><div><div class="co">ALSHOROUK · Cost Control Dep.</div><div class="ttl">Portfolio Analysis</div></div>
       <div class="pfr"><div class="pfdate">${latest ? "Report Date<br><b>" + esc(latest) + "</b><br>" : ""}<span class="pfunit">Amounts in EGP Millions</span></div>${LOGO}</div></div>
@@ -1042,10 +1043,11 @@ function drawAN(ps){
           label: { show: true, ...lbl, formatter: p => anM(p.value[2] * 1e6) } },
         { type: "line", silent: true, markLine: { silent: true, symbol: "none", lineStyle: { color: C.ink2, width: 1 }, label: { show: false }, data: [{ yAxis: 0 }] } }] });
     const s2 = D.filter(d => d.vac != null).sort((a, b) => b.vac - a.vac), sp = Math.max(1, ...s2.map(d => Math.abs(d.vac) / 1e6));
-    const shr = (d, k) => { const a = Math.min(0, d.dVac || 0), b = Math.min(0, d.iVac || 0), v = k === "d" ? a : b; if (d.vac >= 0 || a + b === 0 || !v) return ""; const pc = Math.round(v / (a + b) * 100); return Math.abs(v / 1e6) / sp > 0.09 ? pc + "%" : ""; };
-    mk("an2", { ...base, legend: { ...LG, data: ["Direct", "Indirect"] }, grid: { ...base.grid, right: 16 }, yAxis: cAx(s2.map(d => d.name), { axisLine: { show: false } }), xAxis: vAx({ min: v => Math.floor(v.min * 1.22 / 50) * 50, max: v => Math.max(50, Math.ceil(v.max * 1.15 / 50) * 50) }),
-      series: [{ name: "Direct", type: "bar", stack: "v", barWidth: 18, data: s2.map(d => m(d.dVac)), itemStyle: { color: C.dir }, label: { show: true, position: "inside", color: "#fff", fontSize: 10.5, fontWeight: 700, formatter: p => shr(s2[p.dataIndex], "d") } },
-        { name: "Indirect", type: "bar", stack: "v", data: s2.map(d => m(d.iVac)), itemStyle: { color: C.ind }, label: { show: true, position: "inside", color: "#fff", fontSize: 10.5, fontWeight: 700, formatter: p => shr(s2[p.dataIndex], "i") } },
+    const shr = (d, k) => { const a = Math.min(0, d.dVac || 0), b = Math.min(0, d.iVac || 0), v = k === "d" ? a : b; if (d.vac >= 0 || a + b === 0 || !v) return ""; return Math.round(v / (a + b) * 100) + "% of overrun"; };
+    const tip2 = { ...base.tooltip, formatter: ps => { const d = s2[ps[0].dataIndex]; return `<b>${esc(d.name)}</b><br>` + ps.filter(p => p.seriesName === "Direct" || p.seriesName === "Indirect").map(p => { const k = p.seriesName === "Direct" ? "d" : "i", sh = shr(d, k); return `${p.marker}${p.seriesName}: <b>${anM((k === "d" ? d.dVac : d.iVac))}M</b>${sh ? " · " + sh : ""}`; }).join("<br>") + `<br>Total VAC: <b>${anM(d.vac)}M</b>`; } };
+    mk("an2", { ...base, tooltip: tip2, legend: { ...LG, data: ["Direct", "Indirect"] }, grid: { ...base.grid, right: 16 }, yAxis: cAx(s2.map(d => d.name), { axisLine: { show: false } }), xAxis: vAx({ min: v => Math.floor(v.min * 1.22 / 50) * 50, max: v => Math.max(50, Math.ceil(v.max * 1.15 / 50) * 50) }),
+      series: [{ name: "Direct", type: "bar", stack: "v", barWidth: 18, data: s2.map(d => m(d.dVac)), itemStyle: { color: C.dir }, },
+        { name: "Indirect", type: "bar", stack: "v", data: s2.map(d => m(d.iVac)), itemStyle: { color: C.ind }, },
         { name: "Total", type: "scatter", symbolSize: 0, tooltip: { show: false }, label: { show: true, distance: 6, ...lbl, formatter: p => anM(s2[p.dataIndex].vac) },
           data: s2.map(d => ({ value: [d.vac < 0 ? m(Math.min(0, d.dVac) + Math.min(0, d.iVac)) : m(Math.max(0, d.dVac) + Math.max(0, d.iVac)), d.name], label: { position: d.vac < 0 ? "left" : "right" } })) }, zero] });
     const s3 = D.filter(d => d.bgpPct != null && d.gpPct != null).sort((a, b) => (a.gpPct - a.bgpPct) - (b.gpPct - b.bgpPct));
@@ -1067,7 +1069,7 @@ function drawAN(ps){
           label: { show: true, ...lbl, fontSize: 12, distance: 8, formatter: p => p.value[0].toFixed(2) },
           markLine: { silent: true, symbol: "none", lineStyle: { color: C.navy, type: "dashed", width: 1.5 }, label: { position: "start", formatter: "CPI 1.00", color: C.navy, fontSize: 11, fontWeight: 600 }, data: [{ xAxis: 1 }] } }] });
     const e = D.filter(d => d.prog != null && d.prog < 70 && d.remBud != null && d.ctc != null).sort((a, b) => a.ahead - b.ahead);
-    mk("an6", { ...base, legend: LG, grid: { ...base.grid, right: 76 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx(),
+    mk("an6", { ...base, legend: LG, grid: { ...base.grid, right: 64 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx({ splitNumber: 3 }),
       series: [{ name: "Remaining budget", type: "bar", barGap: "15%", barWidth: 11, data: e.map(d => m(d.remBud)), itemStyle: { color: C.budget, borderRadius: [0, 3, 3, 0] } },
         { name: "Cost to complete", type: "bar", barWidth: 11, data: e.map(d => m(d.ctc)), itemStyle: { color: C.dir, borderRadius: [0, 3, 3, 0] },
           label: { show: true, position: "right", fontSize: 11.5, fontWeight: 700, formatter: p => anM(e[p.dataIndex].ahead), color: C.bad } }] });
@@ -1076,10 +1078,12 @@ function drawAN(ps){
       grid: { ...base.grid, bottom: 28, top: 16, left: 40 }, xAxis: vAx({ name: "Delay (months)", nameLocation: "middle", nameGap: 28, min: 0 }),
       yAxis: vAx({ name: "Indirect VAC (EGP M)", nameLocation: "middle", nameGap: 48, nameRotate: 90 }),
       series: [{ type: "scatter", symbolSize: 14, data: s8.map(d => ({ value: [+d.delay.toFixed(1), m(d.iVac)], name: d.name })), itemStyle: { color: C.ind, borderColor: "#fff", borderWidth: 2 },
-        label: { show: true, position: "right", fontSize: 11, color: C.ink, formatter: p => p.name }, labelLayout: { hideOverlap: true } }] });
+        label: { show: true, position: "right", fontSize: 11, color: C.ink, formatter: p => p.value[0] >= 6 || p.value[1] <= -50 ? p.name : "" }, labelLayout: { hideOverlap: true } }] });
   }
 }
 addEventListener("resize", () => anCharts.forEach(c => c.resize()));
+addEventListener("beforeprint", () => { const el = document.querySelector(".sheet.an"); if (!el) return; el.classList.add("anprint"); anCharts.forEach(c => c.resize()); fitPrint(); });
+addEventListener("afterprint", () => { const el = document.querySelector(".sheet.an"); if (!el) return; el.classList.remove("anprint"); anCharts.forEach(c => c.resize()); fitPrint(); });
 
 /* ---------- events ---------- */
 $("plist").addEventListener("click", e => {

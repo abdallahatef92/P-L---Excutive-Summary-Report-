@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.1 - 2026-11-16
+- Analysis in 3 rows: the indirect cost ratios matrix shares row 3 with Overrun still to come and Delay vs Indirect VAC.
+- Whole Analysis prints on one A3 landscape page (wider print layout applied automatically).
+- VAC by project: Direct / Indirect share shown on hover instead of inside the bars.
+
 ## 1.7.0 - 2026-11-16
 - Analysis is now one page: 6 summary cards, 6 charts and the indirect cost ratios matrix (full width).
 - Overrun mix merged into VAC by project: % inside each bar = Direct / Indirect share of that project's overrun.
