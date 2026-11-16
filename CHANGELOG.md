@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.2 - 2026-11-16
+- Analysis: Delay vs Indirect VAC chart replaced by a Delay column in the indirect cost ratios matrix; Overrun still to come gets the freed space.
+- Matrix headers show names only; each formula appears as a tooltip on hover (info icon).
+- Analysis PDF: exactly one A3 landscape page, filled edge to edge, no blank second page; version stamp moved under the report date.
+
 ## 1.7.1 - 2026-11-16
 - Analysis in 3 rows: the indirect cost ratios matrix shares row 3 with Overrun still to come and Delay vs Indirect VAC.
 - Whole Analysis prints on one A3 landscape page (wider print layout applied automatically).
