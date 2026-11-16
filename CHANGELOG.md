@@ -3,6 +3,13 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.6.0 - 2026-11-16
+- New **Analysis** tab (portfolio, from the P&L reports), two pages:
+  - Profitability: profit bridge, VAC by project (Direct vs Indirect), margin erosion, overrun mix.
+  - Performance & Schedule: CPI by project, overrun still to come, indirect cost ratios matrix, delay vs indirect VAC.
+  - Summary cards and an auto-written key insight under every view; prints on A3 landscape.
+- Charts library (ECharts 5.5.0) bundled into the app so it still works offline.
+
 ## 1.5.8 - 2026-11-16
 - Excel Portfolio header text back to 11pt; taller header rows kept.
 

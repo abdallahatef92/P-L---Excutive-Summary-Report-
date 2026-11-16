@@ -6,6 +6,7 @@ const out = process.argv[2] || path.join(root, "docs", "index.html");
 let html = fs.readFileSync(path.join(__dirname, "app.html"), "utf8");
 const lib = f => fs.readFileSync(path.join(root, "lib", f), "utf8").replace(/<\/script/gi, "<\/script");
 html = html.replace("/*__EXCELJS__*/", () => lib("exceljs.min.js"));
+html = html.replace("/*__ECHARTS__*/", () => lib("echarts.min.js"));
 html = html.replace("/*__PDFJS__*/", () => lib("pdf.min.js")).replace("/*__PDFWORKER__*/", () => lib("pdf.worker.min.js"));
 html = html.replace("__LOGO__", "data:image/jpeg;base64," + fs.readFileSync(path.join(root, "lib", "logo.jpg")).toString("base64"));
 // version: package.json version + build date, shown in the top bar; also renames the offline cache
