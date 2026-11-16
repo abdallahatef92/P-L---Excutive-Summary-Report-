@@ -3,6 +3,12 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.0 - 2026-11-16
+- Analysis is now one page: 6 summary cards, 6 charts and the indirect cost ratios matrix (full width).
+- Overrun mix merged into VAC by project: % inside each bar = Direct / Indirect share of that project's overrun.
+- CPI chart redrawn as distance from 1.00 (red below, green above), progress beside each name.
+- Indirect matrix adds an Indirect VAC column. When printed (A3), the matrix starts page 2.
+
 ## 1.6.1 - 2026-11-16
 - Analysis chart 1 (Profit bridge): project filter (All projects or one project); bars now cross zero correctly when profit turns negative.
 - Analysis chart 7: columns named Indirect % in Contract / Actual / At Completion, each with its formula in full; legend aligned to the same names.
