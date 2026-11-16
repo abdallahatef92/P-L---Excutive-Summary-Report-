@@ -341,7 +341,7 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
   <span class="grow"></span>
   <button class="ibtn" id="savecopy" title="Save a copy with the data inside (to send to someone)" aria-label="Save a copy with data"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg></button>
   <button class="ibtn" id="xlsx" hidden title="Export to Excel (A4, ready to print)" aria-label="Export to Excel"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8l5 8M13 8l-5 8"/><path d="M16 8v8"/></svg></button>
-  <button class="ibtn" id="print" title="Print / Save as PDF" aria-label="Print"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg></button>
+  <button class="ibtn" id="print" title="Save as PDF / Print" aria-label="Save as PDF"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><text x="12" y="17.6" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="6.6" font-weight="700" fill="currentColor" stroke="none">PDF</text></svg></button>
   <button class="ibtn" id="edit" title="Edit projects: add PDFs or remove a project" aria-label="Edit projects"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
 </header>
 <div class="scrim" id="scrim"></div>
@@ -849,7 +849,7 @@ function renderCK(ps){
 function fitPrint(){
   const el = document.querySelector(".sheet"); if (!el) return;
   const ex = el.classList.contains("ex"), pf = el.classList.contains("pf"), mm = 96 / 25.4;
-  if (el.classList.contains("an")){ el.style.setProperty("--pz", (Math.min(420 * mm / el.offsetWidth, 297 * mm / el.offsetHeight) * 0.95).toFixed(4)); return; }
+  if (el.classList.contains("an")){ el.style.setProperty("--pz", (Math.min(420 * mm / el.offsetWidth, 297 * mm / el.offsetHeight) * 0.975).toFixed(4)); return; }
   if (pf){ el.style.setProperty("--pz", (Math.min((420 - 16) * mm / el.offsetWidth, (297 - 16) * mm / el.offsetHeight) * 0.985).toFixed(4)); return; }
   const pw = ((ex ? 420 : 210) - 16) * mm, ph = (297 - 16) * mm;
   let W = ex ? 1240 : 800;
@@ -1014,7 +1014,7 @@ function renderAN(ps){
       (locked.length ? `${anB(locked)} ${locked.length > 1 ? "are" : "is"} 80%+ complete with CPI below 0.95 – that loss is largely locked in. ` : "") + (recov.length ? `${anB(recov)} ${recov.length > 1 ? "are" : "is"} early with CPI below 1.00, so recovery there still pays.` : ""))
     + card(5, "Indirect cost ratios and delay", "Indirect % in Contract · Indirect % Actual · Indirect % At Completion, with Indirect VAC and delay; sorted by gap", mx,
       `<b>${above} of ${gaps.length}</b> projects have Indirect % At Completion above Indirect % in Contract.` + (gaps.length ? ` Biggest gaps: ${anB(gaps.slice(0, 3).map(d => d.name))}.` : "") + (lateL.length ? ` Most delayed: ${anB(lateL.slice(0, 3).map(d => d.name + " (" + Math.round(d.delay) + " mo)"))}.` : ""), "", "")
-    + card(6, "Overrun still to come", "Remaining budget vs cost to complete; projects below 70% progress", ch("an6"),
+    + card(6, "Overrun still to come", "Remaining budget vs cost to complete; projects below 70% progress. <b style=\"color:#c4352b\">Red = remaining budget − cost to complete</b>", ch("an6"),
       aheadTop.length ? `Most of the remaining overrun sits in ${anB(aheadTop)} – it has not been spent yet and is still avoidable.` : "No remaining overrun forecast on projects below 70% progress.")
 ;
   return `<div class="sheetwrap"><div class="sheet an">
@@ -1034,7 +1034,7 @@ function drawAN(ps){
     tooltip: { trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(12,31,92,.05)" } }, backgroundColor: "#fff", borderColor: C.axis, textStyle: { color: C.ink, fontSize: 12 },
       valueFormatter: v => typeof v === "number" ? ax(v) : v } };
   const vAx = (o = {}) => ({ type: "value", axisLabel: { color: C.ink2, fontSize: 11, formatter: ax }, splitLine: { lineStyle: { color: C.grid } }, axisLine: { show: false }, axisTick: { show: false }, nameTextStyle: { color: C.ink2, fontSize: 11.5, fontWeight: 600 }, ...o });
-  const cAx = (d, o = {}) => ({ type: "category", data: d, axisTick: { show: false }, axisLine: { lineStyle: { color: C.axis } }, axisLabel: { color: C.ink, fontSize: 12, margin: 10 }, ...o });
+  const cAx = (d, o = {}) => ({ type: "category", data: d, axisTick: { show: false }, axisLine: { lineStyle: { color: C.axis } }, ...o, axisLabel: { color: C.ink, fontSize: 12, margin: 10, interval: 0, ...(o.axisLabel || {}) } });
   const lbl = { fontSize: 11.5, fontWeight: 700, color: C.ink };
   const mk = (id, opt) => { const el = $(id); if (!el) return; const c = echarts.init(el, null, { renderer: "svg" }); c.setOption(opt); anCharts.push(c); };
   const zero = { type: "line", markLine: { silent: true, symbol: "none", lineStyle: { color: C.ink2, width: 1 }, label: { show: false }, data: [{ xAxis: 0 }] } };
@@ -1076,7 +1076,8 @@ function drawAN(ps){
           label: { show: true, ...lbl, fontSize: 12, distance: 8, formatter: p => p.value[0].toFixed(2) },
           markLine: { silent: true, symbol: "none", lineStyle: { color: C.navy, type: "dashed", width: 1.5 }, label: { position: "start", formatter: "CPI 1.00", color: C.navy, fontSize: 11, fontWeight: 600 }, data: [{ xAxis: 1 }] } }] });
     const e = D.filter(d => d.prog != null && d.prog < 70 && d.remBud != null && d.ctc != null).sort((a, b) => a.ahead - b.ahead);
-    mk("an6", { ...base, legend: LG, grid: { ...base.grid, right: 64 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx(),
+    mk("an6", { ...base, legend: LG,
+      tooltip: { ...base.tooltip, formatter: ps => { const d = e[ps[0].dataIndex]; return `<b>${esc(d.name)}</b><br>` + ps.map(p => `${p.marker}${p.seriesName}: <b>${anM(p.value * 1e6)}M</b>`).join("<br>") + `<br><span style="color:${C.bad}">●</span> Overrun still to come: <b style="color:${C.bad}">${anM(d.ahead)}M</b>`; } }, grid: { ...base.grid, right: 64 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx(),
       series: [{ name: "Remaining budget", type: "bar", barGap: "15%", barWidth: 11, data: e.map(d => m(d.remBud)), itemStyle: { color: C.budget, borderRadius: [0, 3, 3, 0] } },
         { name: "Cost to complete", type: "bar", barWidth: 11, data: e.map(d => m(d.ctc)), itemStyle: { color: C.dir, borderRadius: [0, 3, 3, 0] },
           label: { show: true, position: "right", fontSize: 11.5, fontWeight: 700, formatter: p => anM(e[p.dataIndex].ahead), color: C.bad } }] });
@@ -1089,10 +1090,14 @@ function drawAN(ps){
   }
 }
 addEventListener("resize", () => anCharts.forEach(c => c.resize()));
-addEventListener("beforeprint", () => { const el = document.querySelector(".sheet.an"); if (!el) return; el.classList.add("anprint");
-  for (let k = 0; k < 4; k++){ anCharts.forEach(c => c.resize()); const w = Math.round(el.offsetHeight * 420 / 297); if (Math.abs(w - el.offsetWidth) < 8) break; el.style.width = w + "px"; }
-  anCharts.forEach(c => c.resize()); fitPrint(); });
-addEventListener("afterprint", () => { const el = document.querySelector(".sheet.an"); if (!el) return; el.classList.remove("anprint"); el.style.width = ""; anCharts.forEach(c => c.resize()); fitPrint(); });
+function anFit(){ anCharts.forEach(c => { const d = c.getDom(); c.resize({ width: d.clientWidth, height: d.clientHeight }); }); }
+function anPrep(){ const el = document.querySelector(".sheet.an"); if (!el || el.classList.contains("anprint")) return;
+  el.classList.add("anprint"); el.style.width = "2200px"; void el.offsetHeight; anFit();
+  for (let k = 0; k < 5; k++){ const w = Math.round(el.offsetHeight * 420 / 297); if (Math.abs(w - el.offsetWidth) < 6) break; el.style.width = w + "px"; void el.offsetHeight; anFit(); }
+  fitPrint(); }
+function anUnprep(){ const el = document.querySelector(".sheet.an"); if (!el || !el.classList.contains("anprint")) return; el.classList.remove("anprint"); el.style.width = ""; anFit(); fitPrint(); }
+addEventListener("beforeprint", anPrep);
+addEventListener("afterprint", anUnprep);
 
 /* ---------- events ---------- */
 $("plist").addEventListener("click", e => {
@@ -1144,7 +1149,7 @@ $("savecopy").addEventListener("click", () => {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 });
-$("print").addEventListener("click", () => window.print());
+$("print").addEventListener("click", () => { anPrep(); setTimeout(() => window.print(), 150); });
 $("xlsx").addEventListener("click", () => exportExcel().catch(e => alert("Excel export failed: " + (e.message || e))));
 async function exportExcel(){
   const sheet = document.querySelector(".sheet"), tbl = sheet && sheet.querySelector(".pft"); if (!tbl) return;

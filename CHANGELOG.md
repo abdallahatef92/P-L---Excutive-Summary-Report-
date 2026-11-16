@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.3 - 2026-11-16
+- Overrun still to come: tooltip shows the red figure; subtitle explains it (red = remaining budget − cost to complete).
+- Analysis PDF fills the A3 landscape width; charts resized before printing so none are cut off; all project labels always shown.
+- Print button is now a PDF button (Save as PDF / Print).
+
 ## 1.7.2 - 2026-11-16
 - Analysis: Delay vs Indirect VAC chart replaced by a Delay column in the indirect cost ratios matrix; Overrun still to come gets the freed space.
 - Matrix headers show names only; each formula appears as a tooltip on hover (info icon).
