@@ -261,7 +261,7 @@ body.dragging main{outline:3px dashed var(--accent);outline-offset:-10px}
 td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#dff3e4;color:#1b6e2f}
 .chip{display:inline-block;min-width:44px;padding:2px 6px;border-radius:5px;font-weight:700}
 .chip.bad{background:#fde3e3;color:#b71c1c}.chip.warn{background:#fff1d6;color:#8a5a00}.chip.good{background:#dff3e4;color:#1b6e2f}
-.sheet.pf .pft td.pg{position:relative;width:150px;min-width:150px;padding-bottom:12px}
+.sheet.pf .pft td.pg{position:relative;width:120px;min-width:120px;padding-bottom:12px}
 .sheet.pf .pft td.pg i{position:absolute;left:8px;right:8px;bottom:6px;height:6px;border-radius:3px;background:linear-gradient(90deg,#5b7fc4 var(--pg),#e3e8f1 var(--pg))}
 .sheet.pf .pft tr[data-k]{cursor:pointer}
 .sheet.pf .pft tr[data-k]:hover td{background:#e9eef7}
@@ -1043,6 +1043,7 @@ async function exportExcel(){
       fit[cc - 1] = Math.max(fit[cc - 1], px);
     }
     fit.forEach((px, i) => ws.getColumn(i + 1).width = Math.max(4, Math.round((px + 14) / 7 * 100) / 100));
+    if (pgCells.length) ws.getColumn(pgCells[0].replace(/\d+/, "")).width = 20.71; // Progress: 150 px
   }
   ws.pageSetup.printTitlesRow = start + ":" + (start + Math.max(nHd, 1) - 1);
   if (pgCells.length){
