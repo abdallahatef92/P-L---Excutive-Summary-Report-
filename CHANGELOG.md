@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.6 - 2026-11-16
+- Chart 6 corrected: Remaining budget = Current Budget (Direct + In-Direct) − BCWP (was − Actual Cost, which made the red figure equal VAC).
+- Red figure is now the Remaining variance (remaining budget − cost to complete); green when the rest is forecast under budget.
+- Tooltip adds Current variance (CV = BCWP − AC) and VAC = CV + Remaining variance. Chart shows all projects; renamed Remaining work: budget vs cost to complete.
+
 ## 1.7.5 - 2026-11-16
 - Analysis bar charts: bar thickness is relative to the row, so bars keep a gap in the smaller printed charts too.
 

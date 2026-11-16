@@ -959,7 +959,7 @@ function anData(ps){
       dVac: bd != null && eacD != null ? bd - eacD : null, iVac: bi != null && eacI != null ? bi - eacI : null,
       cpi: cpi == null ? null : cpi > 3 ? cpi / 100 : cpi, prog: prog == null ? null : prog <= 1.5 ? prog * 100 : prog,
       bi, eacI, acI, C, ac, bcwp, delay: late == null ? null : Math.max(0, late),
-      remBud: bd != null && bi != null && ac != null ? bd + bi - ac : null, ctc: ctcD != null || ctcI != null ? (ctcD || 0) + (ctcI || 0) : null,
+      remBud: bd != null && bi != null && bcwp != null ? bd + bi - bcwp : null, cv: bcwp != null && ac != null ? bcwp - ac : null, ctc: ctcD != null || ctcI != null ? (ctcD || 0) + (ctcI || 0) : null,
       r1: bi != null && B ? bi / B * 100 : null, r2: acI != null && C ? acI / C * 100 : null, r3: eacI != null && B ? eacI / B * 100 : null
     };
     d.vac = d.dVac == null && d.iVac == null ? null : (d.dVac || 0) + (d.iVac || 0);
@@ -988,7 +988,8 @@ function renderAN(ps){
   const r1 = S("bi") / B * 100, r3 = S("eacI") / B * 100;
   const locked = D.filter(d => d.prog >= 80 && d.cpi < 0.95).sort((a, b) => a.cpi - b.cpi).map(d => d.name);
   const recov = D.filter(d => d.prog < 30 && d.cpi < 1).sort((a, b) => b.B - a.B).slice(0, 3).map(d => d.name);
-  const aheadTop = early.filter(d => d.ahead < 0).sort((a, b) => a.ahead - b.ahead).slice(0, 2).map(d => d.name);
+  const rem = D.filter(d => d.ahead != null), remT = rem.reduce((a, d) => a + d.ahead, 0);
+  const aheadTop = rem.filter(d => d.ahead < 0).sort((a, b) => a.ahead - b.ahead).slice(0, 2), aheadOk = rem.filter(d => d.ahead > 0).map(d => d.name);
   const gaps = D.filter(d => d.r3 != null && d.r1 != null).sort((a, b) => (b.r3 - b.r1) - (a.r3 - a.r1)), above = gaps.filter(d => d.r3 > d.r1).length;
   const lateL = D.filter(d => d.delay >= 6).sort((a, b) => b.delay - a.delay);
   const kpis = kp("Budgeted Gross Profit", anM(bgp) + "M", anP(bgp / B * 100, 2) + " of contract")
@@ -1014,8 +1015,8 @@ function renderAN(ps){
       (locked.length ? `${anB(locked)} ${locked.length > 1 ? "are" : "is"} 80%+ complete with CPI below 0.95 – that loss is largely locked in. ` : "") + (recov.length ? `${anB(recov)} ${recov.length > 1 ? "are" : "is"} early with CPI below 1.00, so recovery there still pays.` : ""))
     + card(5, "Indirect cost ratios and delay", "Indirect % in Contract · Indirect % Actual · Indirect % At Completion, with Indirect VAC and delay; sorted by gap", mx,
       `<b>${above} of ${gaps.length}</b> projects have Indirect % At Completion above Indirect % in Contract.` + (gaps.length ? ` Biggest gaps: ${anB(gaps.slice(0, 3).map(d => d.name))}.` : "") + (lateL.length ? ` Most delayed: ${anB(lateL.slice(0, 3).map(d => d.name + " (" + Math.round(d.delay) + " mo)"))}.` : ""), "", "")
-    + card(6, "Overrun still to come", "Remaining budget vs cost to complete; projects below 70% progress. <b style=\"color:#c4352b\">Red = remaining budget − cost to complete</b>", ch("an6"),
-      aheadTop.length ? `Most of the remaining overrun sits in ${anB(aheadTop)} – it has not been spent yet and is still avoidable.` : "No remaining overrun forecast on projects below 70% progress.")
+    + card(6, "Remaining work: budget vs cost to complete", "Budget left for the work not yet done vs forecast cost to complete. <b style=\"color:#c4352b\">Red = Remaining variance</b> (remaining budget − cost to complete)", ch("an6"),
+      `The remaining work is forecast to ${remT < 0 ? "overrun" : "come in under budget"} by a net <b>${anM(remT)}M</b>` + (aheadTop.length ? `, mostly ${anB(aheadTop.map(d => d.name + " " + anM(d.ahead) + "M"))}` : "") + "." + (aheadOk.length ? ` ${anB(aheadOk)} forecast to finish the rest under budget.` : ""))
 ;
   return `<div class="sheetwrap"><div class="sheet an">
     <div class="pfhead"><div><div class="co">ALSHOROUK · Cost Control Dep.</div><div class="ttl">Portfolio Analysis</div></div>
@@ -1075,12 +1076,14 @@ function drawAN(ps){
         { name: "CPI", type: "scatter", symbolSize: 13, data: s5.map(d => ({ value: [+d.cpi.toFixed(2), d.name], itemStyle: { color: d.cpi >= 1 ? C.good : d.cpi >= 0.95 ? C.warn : C.bad, borderColor: "#fff", borderWidth: 2 }, label: { position: d.cpi >= 1 ? "right" : "left" } })),
           label: { show: true, ...lbl, fontSize: 12, distance: 8, formatter: p => p.value[0].toFixed(2) },
           markLine: { silent: true, symbol: "none", lineStyle: { color: C.navy, type: "dashed", width: 1.5 }, label: { position: "start", formatter: "CPI 1.00", color: C.navy, fontSize: 11, fontWeight: 600 }, data: [{ xAxis: 1 }] } }] });
-    const e = D.filter(d => d.prog != null && d.prog < 70 && d.remBud != null && d.ctc != null).sort((a, b) => a.ahead - b.ahead);
+    const e = D.filter(d => d.remBud != null && d.ctc != null).sort((a, b) => a.ahead - b.ahead);
     mk("an6", { ...base, legend: LG,
-      tooltip: { ...base.tooltip, formatter: ps => { const d = e[ps[0].dataIndex]; return `<b>${esc(d.name)}</b><br>` + ps.map(p => `${p.marker}${p.seriesName}: <b>${anM(p.value * 1e6)}M</b>`).join("<br>") + `<br><span style="color:${C.bad}">●</span> Overrun still to come: <b style="color:${C.bad}">${anM(d.ahead)}M</b>`; } }, grid: { ...base.grid, right: 64 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx(),
+      tooltip: { ...base.tooltip, formatter: ps => { const d = e[ps[0].dataIndex]; return `<b>${esc(d.name)}</b><br>` + ps.map(p => `${p.marker}${p.seriesName}: <b>${anM(p.value * 1e6)}M</b>`).join("<br>") + `<br><span style="color:${d.ahead < 0 ? C.bad : C.good}">●</span> Remaining variance: <b style="color:${d.ahead < 0 ? C.bad : C.good}">${anM(d.ahead)}M</b>`
+        + `<div style="border-top:1px solid ${C.grid};margin:4px 0"></div><span style="color:${C.gray}">●</span> Current variance (CV): <b style="color:${d.cv < 0 ? C.bad : C.good}">${anM(d.cv)}M</b><br><span style="color:${C.navy}">●</span> VAC = CV + Remaining: <b style="color:${d.vac < 0 ? C.bad : C.good}">${anM((d.cv || 0) + d.ahead)}M</b>`; } }, grid: { ...base.grid, right: 64 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx(),
       series: [{ name: "Remaining budget", type: "bar", barGap: "12%", barWidth: "30%", barMaxWidth: 12, data: e.map(d => m(d.remBud)), itemStyle: { color: C.budget, borderRadius: [0, 3, 3, 0] } },
         { name: "Cost to complete", type: "bar", barWidth: "30%", barMaxWidth: 12, data: e.map(d => m(d.ctc)), itemStyle: { color: C.dir, borderRadius: [0, 3, 3, 0] },
           label: { show: true, position: "right", fontSize: 11.5, fontWeight: 700, formatter: p => anM(e[p.dataIndex].ahead), color: C.bad } }] });
+    { const c6 = anCharts[anCharts.length - 1]; if (c6 && c6.getDom().id === "an6") c6.setOption({ series: [{}, { data: e.map(d => ({ value: m(d.ctc), label: { color: d.ahead < 0 ? C.bad : C.good } })) }] }); }
     const s8 = D.filter(d => d.delay != null && d.iVac != null);
     mk("an8", { ...base, tooltip: { trigger: "item", backgroundColor: "#fff", borderColor: C.axis, textStyle: { color: C.ink, fontSize: 12 }, formatter: p => `<b>${esc(p.name)}</b><br>Delay ${p.value[0].toFixed(1)} months<br>Indirect VAC ${anM(p.value[1] * 1e6)}M` },
       grid: { ...base.grid, bottom: 28, top: 16, left: 40 }, xAxis: vAx({ name: "Delay (months)", nameLocation: "middle", nameGap: 28, min: 0 }),
