@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.5 - 2026-11-16
+- Analysis bar charts: bar thickness is relative to the row, so bars keep a gap in the smaller printed charts too.
+
 ## 1.7.4 - 2026-11-16
 - Analysis PDF: charts are redrawn immediately at print size, so project names and bars match the screen (no more cut-off names or squashed bars).
 

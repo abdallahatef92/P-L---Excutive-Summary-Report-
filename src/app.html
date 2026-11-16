@@ -1053,7 +1053,7 @@ function drawAN(ps){
     const shr = (d, k) => { const a = Math.min(0, d.dVac || 0), b = Math.min(0, d.iVac || 0), v = k === "d" ? a : b; if (d.vac >= 0 || a + b === 0 || !v) return ""; return Math.round(v / (a + b) * 100) + "% of overrun"; };
     const tip2 = { ...base.tooltip, formatter: ps => { const d = s2[ps[0].dataIndex]; return `<b>${esc(d.name)}</b><br>` + ps.filter(p => p.seriesName === "Direct" || p.seriesName === "Indirect").map(p => { const k = p.seriesName === "Direct" ? "d" : "i", sh = shr(d, k); return `${p.marker}${p.seriesName}: <b>${anM((k === "d" ? d.dVac : d.iVac))}M</b>${sh ? " · " + sh : ""}`; }).join("<br>") + `<br>Total VAC: <b>${anM(d.vac)}M</b>`; } };
     mk("an2", { ...base, tooltip: tip2, legend: { ...LG, data: ["Direct", "Indirect"] }, grid: { ...base.grid, right: 16 }, yAxis: cAx(s2.map(d => d.name), { axisLine: { show: false } }), xAxis: vAx({ min: v => Math.floor(v.min * 1.22 / 50) * 50, max: v => Math.max(50, Math.ceil(v.max * 1.15 / 50) * 50) }),
-      series: [{ name: "Direct", type: "bar", stack: "v", barWidth: 18, data: s2.map(d => m(d.dVac)), itemStyle: { color: C.dir }, },
+      series: [{ name: "Direct", type: "bar", stack: "v", barWidth: "58%", barMaxWidth: 18, data: s2.map(d => m(d.dVac)), itemStyle: { color: C.dir }, },
         { name: "Indirect", type: "bar", stack: "v", data: s2.map(d => m(d.iVac)), itemStyle: { color: C.ind }, },
         { name: "Total", type: "scatter", symbolSize: 0, tooltip: { show: false }, label: { show: true, distance: 6, ...lbl, formatter: p => anM(s2[p.dataIndex].vac) },
           data: s2.map(d => ({ value: [d.vac < 0 ? m(Math.min(0, d.dVac) + Math.min(0, d.iVac)) : m(Math.max(0, d.dVac) + Math.max(0, d.iVac)), d.name], label: { position: d.vac < 0 ? "left" : "right" } })) }, zero] });
@@ -1078,8 +1078,8 @@ function drawAN(ps){
     const e = D.filter(d => d.prog != null && d.prog < 70 && d.remBud != null && d.ctc != null).sort((a, b) => a.ahead - b.ahead);
     mk("an6", { ...base, legend: LG,
       tooltip: { ...base.tooltip, formatter: ps => { const d = e[ps[0].dataIndex]; return `<b>${esc(d.name)}</b><br>` + ps.map(p => `${p.marker}${p.seriesName}: <b>${anM(p.value * 1e6)}M</b>`).join("<br>") + `<br><span style="color:${C.bad}">●</span> Overrun still to come: <b style="color:${C.bad}">${anM(d.ahead)}M</b>`; } }, grid: { ...base.grid, right: 64 }, yAxis: cAx(e.map(d => d.name), { inverse: true, axisLine: { show: false } }), xAxis: vAx(),
-      series: [{ name: "Remaining budget", type: "bar", barGap: "15%", barWidth: 11, data: e.map(d => m(d.remBud)), itemStyle: { color: C.budget, borderRadius: [0, 3, 3, 0] } },
-        { name: "Cost to complete", type: "bar", barWidth: 11, data: e.map(d => m(d.ctc)), itemStyle: { color: C.dir, borderRadius: [0, 3, 3, 0] },
+      series: [{ name: "Remaining budget", type: "bar", barGap: "12%", barWidth: "30%", barMaxWidth: 12, data: e.map(d => m(d.remBud)), itemStyle: { color: C.budget, borderRadius: [0, 3, 3, 0] } },
+        { name: "Cost to complete", type: "bar", barWidth: "30%", barMaxWidth: 12, data: e.map(d => m(d.ctc)), itemStyle: { color: C.dir, borderRadius: [0, 3, 3, 0] },
           label: { show: true, position: "right", fontSize: 11.5, fontWeight: 700, formatter: p => anM(e[p.dataIndex].ahead), color: C.bad } }] });
     const s8 = D.filter(d => d.delay != null && d.iVac != null);
     mk("an8", { ...base, tooltip: { trigger: "item", backgroundColor: "#fff", borderColor: C.axis, textStyle: { color: C.ink, fontSize: 12 }, formatter: p => `<b>${esc(p.name)}</b><br>Delay ${p.value[0].toFixed(1)} months<br>Indirect VAC ${anM(p.value[1] * 1e6)}M` },
