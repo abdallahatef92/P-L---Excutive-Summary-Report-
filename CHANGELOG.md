@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.5.4 - 2026-11-16
+- Portfolio: all cells vertically centred (CPI badges were sitting at the top of tall rows).
+
 ## 1.5.3 - 2026-11-16
 - Progress column: 150 px in Excel, 120 px in the app.
 
