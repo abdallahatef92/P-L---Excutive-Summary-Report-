@@ -681,7 +681,7 @@ function renderEX(ex, ps){
 
 function renderPF(ps){
   const n = v => { const x = num(v); return isNaN(x) ? null : x; };
-  const fmt = v => v == null ? "" : (v / 1e6).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const fmt = v => { if (v == null) return ""; const t = Math.abs(v / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M"; return v < 0 && t !== "0.00M" ? `<span class="negv">(${t})</span>` : t; };
   const pct = v => v == null || !isFinite(v) ? "" : (v * 100).toFixed(2) + "%";
   const pg = t => { const x = num(t); const w = isNaN(x) ? 0 : Math.max(0, Math.min(100, x > 1.5 ? x : x * 100)); return `<td class="v pg" style="--pg:${w.toFixed(1)}%">${esc(t)}</td>`; };
   const T = { B0:0, B:0, bac:0, bgp:0, eac:0, vr:0, gp:0, rk:0, gr:0, C:0, bcwp:0, ac:0, cv:0, k:0 };
@@ -716,7 +716,7 @@ function renderPF(ps){
       <td></td><td class="c">${over ? over + " over" : ""}</td></tr>` : "";
   return `<div class="sheetwrap"><div class="sheet pf">
     <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Portfolio Summary</div>${LOGO}</div>
-    <div class="pfdate">${latest ? "Report Date: <b>" + esc(latest) + "</b>" : ""}<span class="pfunit">Amounts in EGP Millions</span></div>
+    <div class="pfdate">${latest ? "Report Date: <b>" + esc(latest) + "</b>" : ""}<span class="pfunit">Amounts in EGP (M = millions)</span></div>
     <table class="pft">
       <tr class="hd"><th>#</th><th>Project</th><th>Client</th><th>Contract Value<br>incl. VAT</th><th>Contract Value<br>excl. VAT</th><th>BAC excl.<br>Sponsorship</th><th>Budgeted<br>Gross Profit</th><th>Budgeted<br>GP %</th>
         <th>EAC<br>(excl. Spons.)</th><th>VAC</th><th>EAC Gross<br>Profit</th><th>EAC<br>GP %</th><th>Risk<br>Contingency</th><th>GP +<br>Risk</th><th>GP +<br>Risk %</th>
@@ -935,13 +935,13 @@ async function exportExcel(){
         val = { richText: [{ text: main, font: { name: TNR, bold: true, size: 11 } }, { text: "\n" + small.innerText.trim(), font: { name: "Arial", size: 8, color: { argb: "FF555555" } } }] };
         lines = 2; text = main;
       } else if (!hd){
-        const m = text.match(/^(\()?(-)?([\d,]+(?:\.(\d+))?)(%)?\)?$/);
+        const m = text.match(/^(\()?(-)?([\d,]+(?:\.(\d+))?)(%|M)?\)?$/);
         if (m && /\d/.test(m[3])){
           let v = parseFloat(m[3].replace(/,/g, "")); if (m[1] || m[2]) v = -v;
           const d = m[4] ? m[4].length : 0, z = d ? "0." + "0".repeat(d) : "0";
           const kd = d && (!isCk || Math.abs(v) < 100);
-          if (m[5]){ v /= 100; fmt = z + "%;[Red](" + z + "%)"; } else fmt = "#,##0" + (kd ? z.slice(1) : "") + ";[Red](#,##0" + (kd ? z.slice(1) : "") + ")";
-          if (!m[5] && !kd) v = Math.round(v);
+          if (m[5] === "M"){ fmt = '#,##0.00"M";[Red](#,##0.00"M")'; m[5] = ""; } else if (m[5]){ v /= 100; fmt = z + "%;[Red](" + z + "%)"; } else fmt = "#,##0" + (kd ? z.slice(1) : "") + ";[Red](#,##0" + (kd ? z.slice(1) : "") + ")";
+          if (!fmt.includes('"M"') && !m[5] && !kd) v = Math.round(v);
           val = v;
         }
       }

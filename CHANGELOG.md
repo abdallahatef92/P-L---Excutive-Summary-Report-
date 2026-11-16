@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.4.1 - 2026-11-16
+- Portfolio amounts shown as 666.45M (2 decimals with an M suffix), page and Excel.
+
 ## 1.4.0 - 2026-11-16
 - Portfolio amounts shown in EGP millions (1 decimal), page and Excel.
 - Alternating row shading.
