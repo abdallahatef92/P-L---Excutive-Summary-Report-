@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.5.1 - 2026-11-16
+- Portfolio fits the screen width without scrolling (compact columns plus auto-scale).
+- Removed the explanatory note under the Portfolio.
+- Excel: tighter column widths.
+
 ## 1.5.0 - 2026-11-16
 - Portfolio redesign: summary cards, grouped two-row headers, larger text, logo, light grey row bands, status and CPI badges, slim progress bars.
 - Portfolio sorted by expected finish date.
