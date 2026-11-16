@@ -299,7 +299,7 @@ td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#df
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.5.6 · 2026-11-16</span></div>
+  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.5.7 · 2026-11-16</span></div>
   <label class="psel"><span>Project</span><select id="psel"></select></label>
   <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button></nav>
   <span class="grow"></span>
@@ -1091,6 +1091,7 @@ async function exportExcel(){
       if (!isCk){
         const navy = { style: "medium", color: { argb: "FF0C1F5C" } }, sep = k.contains("sep") ? { style: "medium", color: { argb: "FFC9D0DC" } } : lite;
         cell.border = hd ? { top: lite, left: lite, bottom: lite, right: lite } : { top: tot ? navy : lite, bottom: tot ? navy : lite, left: sep, right: lite };
+        if (hd) cell.font.size = grp ? 13 : 12;
         if (!hd && !tot) cell.font.color = { argb: k.contains("neg") ? "FFC62828" : k.contains("st") ? "FFFFFFFF" : k.contains("pn") ? "FF0C1F5C" : k.contains("cl") ? "FF5B6577" : "FF1D2433" };
         if (tot) cell.font.color = { argb: k.contains("neg") ? "FFC62828" : "FF0C1F5C" };
         const pf = hd ? (grp ? "0C1F5C" : "2F4A8A") : tot ? "E8ECF3" : k.contains("bad") ? "D0432A" : k.contains("good") ? "2E9E5B" : k.contains("warn") ? "D99A1C" : di % 2 ? "F4F5F7" : null;
@@ -1112,7 +1113,7 @@ async function exportExcel(){
       if (cs === 1) widths[c - 1] = Math.max(widths[c - 1], need); else spans.push([c - 1, cs, need]);
       c += cs;
     }
-    ws.getRow(r).height = lines > 1 ? lines * 15 + 6 : tot ? 24 : hd ? 22 : 20;
+    ws.getRow(r).height = !isCk && hd ? (grp ? 30 : 48) : lines > 1 ? lines * 15 + 6 : tot ? 26 : 22;
     if (!hd && !tot) di++;
     r++;
   }
