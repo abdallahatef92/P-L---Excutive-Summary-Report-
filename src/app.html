@@ -953,7 +953,7 @@ async function exportExcel(){
     views: [{ showGridLines: false }],
     pageSetup: { paperSize: 9, orientation: isCk ? "portrait" : "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0,
       horizontalCentered: true, margins: { left: 0.3, right: 0.3, top: 0.45, bottom: 0.5, header: 0.2, footer: 0.25 } },
-    headerFooter: { oddFooter: "&L&8" + title.replace(/&/g, "&&") + "&C&8Project Reports " + (document.querySelector(".ver") || {}).textContent + "&R&8Page &P of &N" } });
+    headerFooter: { oddFooter: "&L&8" + title.replace(/&/g, "&&") + "&R&8Page &P of &N" } });
   const rows = [...tbl.rows];
   const ncol = Math.max(...rows.map(r => [...r.cells].reduce((s, c) => s + c.colSpan, 0)));
   const TNR = "Times New Roman", thin = { style: "thin", color: { argb: "FF000000" } };

@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.5.6 - 2026-11-16
+- Removed the app version from the Excel footer (still on printed / PDF reports).
+
 ## 1.5.5 - 2026-11-16
 - App version printed at the bottom of every printed / PDF report and in the Excel footer.
 
