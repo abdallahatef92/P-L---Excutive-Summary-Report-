@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.4.0 - 2026-11-16
+- Portfolio amounts shown in EGP millions (1 decimal), page and Excel.
+- Alternating row shading.
+- Data bar in the Progress column (page and Excel).
+
 ## 1.3.0 - 2026-11-16
 - Portfolio columns reworked from review comments: Contract Value incl. VAT, BAC excl. Sponsorship (Current Budget Direct + In-Direct), VAC, GP + Risk / GP + Risk %, EV, BCWP, AC, CV (BCWP - AC).
 - Abbreviation legend under the Portfolio (page and Excel).
