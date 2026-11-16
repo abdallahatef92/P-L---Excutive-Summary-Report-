@@ -335,7 +335,7 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.7.3 · 2026-11-16</span></div>
+  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.7.4 · 2026-11-16</span></div>
   <label class="psel"><span>Project</span><select id="psel"></select></label>
   <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button><button class="tab" data-t="an">Analysis</button></nav>
   <span class="grow"></span>
@@ -1221,7 +1221,7 @@ function drawAN(ps){
   }
 }
 addEventListener("resize", () => anCharts.forEach(c => c.resize()));
-function anFit(){ anCharts.forEach(c => { const d = c.getDom(); c.resize({ width: d.clientWidth, height: d.clientHeight }); }); }
+function anFit(){ anCharts.forEach(c => { const d = c.getDom(); c.resize({ width: d.clientWidth, height: d.clientHeight, animation: { duration: 0 } }); const z = c.getZr && c.getZr(); if (z && z.flush) z.flush(); }); }
 function anPrep(){ const el = document.querySelector(".sheet.an"); if (!el || el.classList.contains("anprint")) return;
   el.classList.add("anprint"); el.style.width = "2200px"; void el.offsetHeight; anFit();
   for (let k = 0; k < 5; k++){ const w = Math.round(el.offsetHeight * 420 / 297); if (Math.abs(w - el.offsetWidth) < 6) break; el.style.width = w + "px"; void el.offsetHeight; anFit(); }

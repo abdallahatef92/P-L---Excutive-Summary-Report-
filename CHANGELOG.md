@@ -3,6 +3,9 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.7.4 - 2026-11-16
+- Analysis PDF: charts are redrawn immediately at print size, so project names and bars match the screen (no more cut-off names or squashed bars).
+
 ## 1.7.3 - 2026-11-16
 - Overrun still to come: tooltip shows the red figure; subtitle explains it (red = remaining budget − cost to complete).
 - Analysis PDF fills the A3 landscape width; charts resized before printing so none are cut off; all project labels always shown.

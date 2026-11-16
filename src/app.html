@@ -1090,7 +1090,7 @@ function drawAN(ps){
   }
 }
 addEventListener("resize", () => anCharts.forEach(c => c.resize()));
-function anFit(){ anCharts.forEach(c => { const d = c.getDom(); c.resize({ width: d.clientWidth, height: d.clientHeight }); }); }
+function anFit(){ anCharts.forEach(c => { const d = c.getDom(); c.resize({ width: d.clientWidth, height: d.clientHeight, animation: { duration: 0 } }); const z = c.getZr && c.getZr(); if (z && z.flush) z.flush(); }); }
 function anPrep(){ const el = document.querySelector(".sheet.an"); if (!el || el.classList.contains("anprint")) return;
   el.classList.add("anprint"); el.style.width = "2200px"; void el.offsetHeight; anFit();
   for (let k = 0; k < 5; k++){ const w = Math.round(el.offsetHeight * 420 / 297); if (Math.abs(w - el.offsetWidth) < 6) break; el.style.width = w + "px"; void el.offsetHeight; anFit(); }
