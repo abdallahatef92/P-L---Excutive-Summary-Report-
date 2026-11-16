@@ -119,6 +119,12 @@ select{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6
 .sheet .plt tr.st.bad td.v{background:#d0432a}
 .sheet .plt tr.st.good td.v{background:#2e9e5b}
 .sheet .plt tr.st.warn td.v{background:#d99a1c}
+.sheet .plt td.p{text-align:center;font-weight:400;color:#1b4aa0;background:#fff}
+.sheet .plt tr.hdr td.p{color:#fff;font-weight:700;background:#0c1f5c}
+.sheet .plt .pp{position:relative;cursor:help;border-bottom:1px dotted #1b4aa0}
+.sheet .plt .pp:hover::after{content:attr(data-tip);position:absolute;right:0;bottom:calc(100% + 8px);z-index:9;width:max-content;max-width:300px;white-space:pre-line;text-align:left;
+  background:#1d2433;color:#fff;font:400 12px/1.45 "Segoe UI",Arial,sans-serif;padding:7px 10px;border-radius:6px;box-shadow:0 4px 14px #0003}
+@media print{.sheet .plt .pp{border-bottom:0}}
 /* Executive summary */
 .sheet.ex{width:1240px;padding:26px 60px 34px;font-family:Arial,Helvetica,sans-serif;font-size:11.5px}
 .rule2{height:2px;background:linear-gradient(90deg,#000 0 32%,transparent 32% 46%,#000 46%);margin-bottom:12px}
@@ -652,20 +658,45 @@ const PL_STYLE = [
   [/^risk contingency/i, "vk"],
 ];
 const LOGO = `<div class="logo"><img src="__LOGO__" alt="ALSHOROUK Construction Company"></div>`;
+// % column (from "ratio colunms for P&L.xlsx"): [row, numerator, denominator(s), formula text]
+const PL_PCT = [
+  [/^baseline budget direct/i, "Baseline Budget Direct", [/^baseline budget direct/i, /^baseline budget in-direct/i, /^baseline sponsorship$/i], "Baseline Budget Direct ÷ (Baseline Direct + In-Direct + Sponsorship)"],
+  [/^baseline budget in-direct/i, "Baseline Budget In-Direct", [/^baseline budget direct/i, /^baseline budget in-direct/i, /^baseline sponsorship$/i], "Baseline Budget In-Direct ÷ (Baseline Direct + In-Direct + Sponsorship)"],
+  [/^baseline sponsorship$/i, "Baseline Sponsorship", [/^baseline budget direct/i, /^baseline budget in-direct/i, /^baseline sponsorship$/i], "Baseline Sponsorship ÷ (Baseline Direct + In-Direct + Sponsorship)"],
+  [/^current budget direct/i, "", [/^current budget direct/i, /^current budget in-direct/i, /^current budget sponsorship/i], "Current Budget Direct ÷ (Current Direct + In-Direct + Sponsorship)"],
+  [/^current budget in-direct/i, "", [/^current budget direct/i, /^current budget in-direct/i, /^current budget sponsorship/i], "Current Budget In-Direct ÷ (Current Direct + In-Direct + Sponsorship)"],
+  [/^current budget sponsorship/i, "", [/^current budget direct/i, /^current budget in-direct/i, /^current budget sponsorship/i], "Current Budget Sponsorship ÷ (Current Direct + In-Direct + Sponsorship)"],
+  [/^actual cost \(pc\)/i, "", [/^estimate at completion \(eac\) - /i], "Actual Cost (PC) ÷ EAC (Without Sponsorship)"],
+  [/^actual direct cost/i, "", [/^estimate at completion \(eac\) direct/i], "Actual Direct Cost ÷ EAC Direct"],
+  [/^actual in-direct cost/i, "", [/^estimate at completion \(eac\) in-direct/i], "Actual In-Direct Cost ÷ EAC In-Direct"],
+  [/^bcwp/i, "", [/^total current budget/i], "BCWP (Budget) ÷ Total Current Budget"],
+  [/^estimate at completion \(eac\) direct/i, "", [/^estimate at completion \(eac\) - /i], "EAC Direct ÷ EAC (Without Sponsorship)"],
+  [/^estimate at completion \(eac\) in-direct/i, "", [/^estimate at completion \(eac\) - /i], "EAC In-Direct ÷ EAC (Without Sponsorship)"],
+  [/^cost to complete \(ctc\) direct/i, "", [/^estimate at completion \(eac\) direct/i], "CTC Direct ÷ EAC Direct"],
+  [/^cost to complete \(ctc\) in-direct/i, "", [/^estimate at completion \(eac\) in-direct/i], "CTC In-Direct ÷ EAC In-Direct"],
+  [/^risk contingency/i, "", [/^estimated current project value without vat/i], "Risk Contingency ÷ Estimated Current Project Value Without VAT (B)"],
+];
+function plPct(pl, r){
+  const d = PL_PCT.find(x => x[0].test(r.label)); if (!d) return "";
+  const v = num(r.value), den = d[2].reduce((a, re) => { const x = num(plGet(pl, re)); return a + (isNaN(x) ? 0 : x); }, 0);
+  if (isNaN(v) || !den) return "";
+  const f = x => Math.round(x).toLocaleString("en-US");
+  return `<span class="pp" data-tip="${esc(d[3] + "\n= " + f(v) + " ÷ " + f(den))}">${(v / den * 100).toFixed(1)}%</span>`;
+}
 function renderPL(pl){
   const si = pl.rows.findIndex(r => /^expected project status/i.test(r.label));
   const main = si < 0 ? pl.rows : pl.rows.slice(0, si), tail = si < 0 ? [] : pl.rows.slice(si);
   const row = r => {
     const c = (PL_STYLE.find(s => s[0].test(r.label)) || [0, ""])[1];
-    return `<tr class="${c}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`;
+    return `<tr class="${c}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="p">${/hdr/.test(c) ? "%" : plPct(pl, r)}</td></tr>`;
   };
   const trow = r => /^expected project status/i.test(r.label)
-    ? `<tr class="st ${statusKind(r.value)}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`
-    : `<tr class="vk"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`;
+    ? `<tr class="st ${statusKind(r.value)}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="p"></td></tr>`
+    : `<tr class="vk"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="p"></td></tr>`;
   return `<div class="sheet pl">
     <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Project P&amp;L Report</div>${LOGO}</div>
-    <table class="plt"><colgroup><col style="width:69%"><col></colgroup>${main.map(row).join("")}</table>
-    ${tail.length ? `<table class="plt plt2"><colgroup><col style="width:69%"><col></colgroup>${tail.map(trow).join("")}</table>` : ""}
+    <table class="plt"><colgroup><col style="width:61%"><col style="width:27%"><col></colgroup>${main.map(row).join("")}</table>
+    ${tail.length ? `<table class="plt plt2"><colgroup><col style="width:61%"><col style="width:27%"><col></colgroup>${tail.map(trow).join("")}</table>` : ""}
   </div>`;
 }
 

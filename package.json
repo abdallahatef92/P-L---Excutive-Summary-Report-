@@ -1,6 +1,6 @@
 {
   "name": "project-reports",
-  "version": "1.7.6",
+  "version": "1.8.0",
   "private": true,
   "description": "Offline HTML viewer for Project P&L and Executive Summary PDF reports",
   "scripts": {

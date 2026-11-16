@@ -3,6 +3,10 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.8.0 - 2026-11-16
+- P&L report: new % column with 15 ratios (budget split, actual vs EAC, BCWP vs budget, EAC split, CTC vs EAC, risk vs contract value), as defined in ratio colunms for P&L.xlsx.
+- Hover any % to see its formula and the two figures used.
+
 ## 1.7.6 - 2026-11-16
 - Chart 6 corrected: Remaining budget = Current Budget (Direct + In-Direct) − BCWP (was − Actual Cost, which made the red figure equal VAC).
 - Red figure is now the Remaining variance (remaining budget − cost to complete); green when the rest is forecast under budget.
