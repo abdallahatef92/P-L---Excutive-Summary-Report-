@@ -39,6 +39,10 @@ aside{background:var(--navy);color:#fff;padding:18px 14px;display:flex;flex-dire
 .rm:hover{opacity:1;background:#c0392b;color:#fff}
 .pitem.sel .tag{background:var(--soft);color:var(--accent)}
 .side-foot{margin-top:auto;display:flex;gap:8px}
+.dbbox{border-top:1px solid #2c4478;padding-top:10px;margin-top:6px}.dbstat{font-size:12px;color:#cfd9ee;margin:10px 4px 8px;line-height:1.45;word-break:break-word}.dbstat b{color:#fff}.dbstat .dberr{color:#ffb4a8}
+.dbbtns{display:flex;gap:8px;flex-wrap:wrap}
+.msel select{min-width:120px}
+.msg.info{background:#e8eefb;color:#0c1f5c}.msg .btn{margin-left:8px;color:#0c1f5c;border-color:#0c1f5c;padding:3px 9px}
 .btn{border:1px solid #47609a;background:transparent;color:#dbe4f7;border-radius:7px;padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer}
 .btn:hover{background:#1e3a72}
 main{padding:22px 28px 60px;min-width:0}
@@ -342,6 +346,7 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
 <body>
 <header class="topbar">
   <div class="brand">Project Reports <span class="ver" title="App version and build date">v__VERSION__</span></div>
+  <label class="psel msel"><span>Month</span><select id="msel"></select></label>
   <label class="psel"><span>Project</span><select id="psel"></select></label>
   <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button><button class="tab" data-t="an">Analysis</button></nav>
   <span class="grow"></span>
@@ -358,7 +363,9 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
   <div class="plabel" id="plabel" hidden>Loaded projects</div>
   <div class="plist" id="plist"></div>
   <button class="ckbtn" id="ckbtn" hidden>Check P&amp;L vs Executive Summary</button>
-  <div class="side-foot"><button class="btn" id="clear" hidden>Clear all</button></div>
+  <div class="dbbox"><div class="plabel">Data file</div><div id="dbstat" class="dbstat"></div>
+    <div class="dbbtns"><button class="btn" id="dbopen" hidden>Open data file…</button><button class="btn" id="dbnew" hidden>New data file…</button></div></div>
+  <div class="side-foot"><button class="btn" id="clear" hidden>Delete this month</button></div>
 </aside>
 <main id="main"></main>
 
@@ -370,16 +377,87 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
 <script>
 "use strict";
 const KEY = "projectReports.v1";
-let state = { pl:{}, ex:{}, sel:null, tab:"pl" };
+let state = { months:{}, month:null, pl:{}, ex:{}, sel:null, tab:"pl" };
 let messages = [];
+/* ---------- months: every report is stored under the month of its report date ---------- */
+const MON = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+function monthKey(v){
+  if (!v) return null;
+  const t = String(v).trim(), m = /^([a-z]{3})[a-z]*[\s\-'.,]+(\d{2}|\d{4})$/i.exec(t);
+  if (m){ const i = MON.indexOf(m[1].toLowerCase()); if (i >= 0){ let y = +m[2]; if (y < 100) y += 2000; return y + "-" + String(i + 1).padStart(2, "0"); } }
+  const d = new Date(t); return isNaN(d) ? null : d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+}
+const monthLabel = k => { if (!k) return ""; const [y, m] = k.split("-"); return MON[+m - 1].replace(/^./, c => c.toUpperCase()) + " " + y; };
+const plMonth = pl => monthKey(pl && pl.date);
+const exMonth = ex => { const r = ((ex && ex.info) || []).find(x => /report data date/i.test(x[0])); return monthKey(r && r[1]); };
+function useMonth(k){
+  if (!k){ state.month = null; state.pl = {}; state.ex = {}; return; }
+  if (!state.months[k]) state.months[k] = { pl:{}, ex:{} };
+  state.month = k; state.pl = state.months[k].pl; state.ex = state.months[k].ex;
+}
+const touch = () => { if (state.month && state.months[state.month]) state.months[state.month].upd = Date.now(); };
+const monthKeys = () => Object.keys(state.months).sort();
+function adopt(d){
+  d = d || {};
+  state = { months:{}, month:null, pl:{}, ex:{}, sel:d.sel || null, tab:d.tab || "pl", anb:d.anb, snap:d.snap };
+  if (d.months) state.months = d.months;
+  else if (d.pl || d.ex){ // older single-month data: file it under its report month
+    const k = Object.values(d.pl || {}).map(plMonth).filter(Boolean).sort().pop() || Object.values(d.ex || {}).map(exMonth).filter(Boolean).sort().pop() || monthKey(new Date().toDateString());
+    state.months[k] = { pl:d.pl || {}, ex:d.ex || {} };
+  }
+  useMonth(d.month && state.months[d.month] ? d.month : monthKeys().pop() || null);
+}
 {
   let emb = null, ls = null;
   try { const t = document.getElementById("embedded").textContent.trim(); if (t) emb = JSON.parse(t); } catch(e){}
   try { ls = JSON.parse(localStorage.getItem(KEY)); } catch(e){}
-  if (emb && emb.pl && emb.ex && !(ls && ls.snap === emb.snap)) state = emb;
-  else if (ls && ls.pl && ls.ex) state = ls;
+  const has = d => d && (d.months || (d.pl && d.ex));
+  if (has(emb) && !(ls && ls.snap === emb.snap)) adopt(emb); else adopt(has(ls) ? ls : null);
 }
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} };
+const ser = () => JSON.stringify({ months:state.months, month:state.month, sel:state.sel, tab:state.tab, anb:state.anb, snap:state.snap });
+const save = () => { try { localStorage.setItem(KEY, ser()); } catch(e){} dbSave(); };
+
+/* ---------- data file: one local JSON file holds every month ---------- */
+const DB = { h:null, ok:false, err:"", t:0, saved:null, supported: typeof window.showOpenFilePicker === "function" };
+function idbOpen(){ return new Promise((res, rej) => { const r = indexedDB.open("projectReports", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function kvGet(k){ try { const db = await idbOpen(); return await new Promise(res => { const q = db.transaction("kv").objectStore("kv").get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); } catch(e){ return null; } }
+async function kvSet(k, v){ try { const db = await idbOpen(); await new Promise(res => { const t = db.transaction("kv", "readwrite"); t.objectStore("kv").put(v, k); t.oncomplete = res; t.onerror = res; }); } catch(e){} }
+async function dbWriteNow(){
+  if (!DB.h || !DB.ok) return;
+  try { const w = await DB.h.createWritable(); await w.write(JSON.stringify({ app:"Project Reports", format:1, saved:new Date().toISOString(), months:state.months })); await w.close(); DB.err = ""; DB.saved = new Date(); }
+  catch(e){ DB.err = "Could not save to the data file: " + (e.message || e); }
+  dbStatus();
+}
+function dbSave(){ if (!DB.h || !DB.ok) return; clearTimeout(DB.t); DB.t = setTimeout(dbWriteNow, 400); }
+async function dbAttach(h, ask){
+  DB.h = h; DB.err = "";
+  let perm = "denied";
+  try { perm = await h.queryPermission({ mode:"readwrite" }); if (perm !== "granted" && ask) perm = await h.requestPermission({ mode:"readwrite" }); } catch(e){}
+  DB.ok = perm === "granted"; await kvSet("dbHandle", h);
+  if (DB.ok){
+    try {
+      const txt = (await (await h.getFile()).text()).trim(), d = txt ? JSON.parse(txt) : null;
+      if (d && d.months) for (const [k, v] of Object.entries(d.months)){ const mine = state.months[k]; if (!mine || (v.upd || 0) >= (mine.upd || 0)) state.months[k] = v; }
+      const keep = state.month; useMonth(keep && state.months[keep] ? keep : monthKeys().pop() || null);
+      try { localStorage.setItem(KEY, ser()); } catch(e){}
+      await dbWriteNow();
+    } catch(e){ DB.err = "Could not read the data file: " + (e.message || e); }
+    render();
+  }
+  dbStatus();
+}
+function dbStatus(){
+  const el = $("dbstat"); if (!el) return;
+  const t = d => d.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+  el.innerHTML = !DB.supported ? "Data file needs Chrome or Edge. Data is kept in this browser only."
+    : DB.h && DB.ok ? `<b>${esc(DB.h.name)}</b><br>${DB.err ? `<span class="dberr">${esc(DB.err)}</span>` : DB.saved ? "Saved " + t(DB.saved) : "Connected"} · ${monthKeys().length} month${monthKeys().length === 1 ? "" : "s"}`
+    : DB.h ? `<b>${esc(DB.h.name)}</b><br><button class="btn" data-dbconnect>Reconnect</button>`
+    : "Not connected. Data is kept in this browser only.";
+  $("dbopen").hidden = $("dbnew").hidden = !DB.supported;
+}
+const DB_TYPES = [{ description:"Project Reports data", accept:{ "application/json":[".json"] } }];
+async function dbOpen(){ try { const [h] = await window.showOpenFilePicker({ types:DB_TYPES }); await dbAttach(h, true); } catch(e){ if (e.name !== "AbortError") alert("Could not open the data file: " + (e.message || e)); } }
+async function dbNew(){ try { const h = await window.showSaveFilePicker({ suggestedName:"Project Reports Data.json", types:DB_TYPES }); DB.h = h; DB.ok = true; await kvSet("dbHandle", h); await dbWriteNow(); render(); } catch(e){ if (e.name !== "AbortError") alert("Could not create the data file: " + (e.message || e)); } }
 
 /* ---------- helpers ---------- */
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -566,12 +644,13 @@ async function loadBuffers(files){
       if (/Project P&L Report/i.test(text) || /EAC Gross Profit/i.test(text)){
         const pl = parsePL(items);
         if (!pl.name) throw new Error("could not find the Project Name");
-        pl.file = f.name; state.pl[pl.name] = pl; state.sel = pl.name;
+        pl.file = f.name; useMonth(plMonth(pl) || state.month || monthKey(new Date().toDateString())); state.pl[pl.name] = pl; state.sel = pl.name; touch();
       } else if (/BCWP/.test(text) && /Divisions/i.test(text)){
         const ex = parseEX(items);
         if (!ex.name) ex.name = f.name.replace(/\.pdf$/i,"");
+        useMonth(exMonth(ex) || state.month || monthKey(new Date().toDateString()));
         ex.file = f.name; ex.link = (state.ex[ex.name] || {}).link || null;
-        state.ex[ex.name] = ex;
+        state.ex[ex.name] = ex; touch();
         const p = projects().find(p => p.ex === ex); if (p) state.sel = p.key;
       } else throw new Error("not recognised as a P&L or Executive Summary report");
     } catch(e){ messages.push(`${f.name}: ${e.message || e}`); }
@@ -615,6 +694,7 @@ function cpiKind(v){ const n = num(v); const x = n > 3 ? n/100 : n; return isNaN
 
 function renderSide(ps){
   $("plabel").hidden = $("clear").hidden = !ps.length;
+  $("plabel").textContent = "Loaded projects" + (state.month ? " – " + monthLabel(state.month) : "");
   if ($("ckbtn")) $("ckbtn").hidden = !ps.length;
   $("plist").innerHTML = ps.map(p => {
     const st = p.pl ? plGet(p.pl, /^expected project status/i) : "";
@@ -939,7 +1019,13 @@ function renderInner(){
   sel.disabled = !ps.length || state.tab === "pf" || state.tab === "ck" || state.tab === "an";
   sel.innerHTML = ps.length ? ps.map(p => `<option value="${esc(p.key)}" ${p.key === state.sel ? "selected" : ""}>${esc(p.name)}${p.pl ? "" : " (Executive only)"}</option>`).join("") : `<option>No projects loaded</option>`;
   document.querySelectorAll(".topbar .tab").forEach(t => t.classList.toggle("on", t.dataset.t === state.tab));
-  const msgs = messages.length ? `<div class="msgs">${messages.map(m => `<div class="msg">${esc(m)}</div>`).join("")}</div>` : "";
+  const keys = monthKeys(), ms = $("msel");
+  ms.innerHTML = keys.length ? keys.slice().reverse().map(k => `<option value="${k}" ${k === state.month ? "selected" : ""}>${monthLabel(k)} · ${Object.keys(state.months[k].pl).length}</option>`).join("") : `<option>No data</option>`;
+  ms.disabled = !keys.length;
+  const notes = [], i = keys.indexOf(state.month), prev = i > 0 ? state.months[keys[i - 1]] : null;
+  if (prev){ const miss = Object.keys(prev.pl).filter(n => !state.pl[n]); if (miss.length) notes.push(`${monthLabel(state.month)}: ${Object.keys(state.pl).length} of ${Object.keys(state.pl).length + miss.length} projects loaded – missing ${miss.join(", ")} (loaded in ${monthLabel(keys[i - 1])}).`); }
+  const dbNote = DB.h && !DB.ok ? `<div class="msg info">Data file <b>${esc(DB.h.name)}</b> needs your permission to reconnect.<button class="btn" data-dbconnect>Reconnect</button></div>` : "";
+  const msgs = messages.length || notes.length || dbNote ? `<div class="msgs">${dbNote}${notes.map(m => `<div class="msg info">${esc(m)}</div>`).join("")}${messages.map(m => `<div class="msg">${esc(m)}</div>`).join("")}</div>` : "";
   const p = ps.find(p => p.key === state.sel);
   // the browser uses the page title as the default file name when saving as PDF
   const safe = s => String(s).replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim();
@@ -1139,7 +1225,7 @@ $("plist").addEventListener("click", e => {
   if (rm){
     const p = projects().find(p => p.key === rm.dataset.rm);
     if (p && confirm('Remove "' + p.name + '" and its loaded reports from this page?')){
-      if (p.pl) delete state.pl[p.pl.name];
+      touch(); if (p.pl) delete state.pl[p.pl.name];
       if (p.ex) delete state.ex[p.ex.name];
       save(); render();
     }
@@ -1150,6 +1236,11 @@ $("main").addEventListener("change", e => { if (e.target.matches("[data-anb]")){
 $("main").addEventListener("click", e => { const b = e.target.closest("[data-anp]"); if (b){ state.anp = +b.dataset.anp; save(); render(); } });
 document.querySelector(".topbar").addEventListener("click", e => { const t = e.target.closest(".tab"); if (t){ state.tab = t.dataset.t; save(); render(); } });
 $("psel").addEventListener("change", e => { state.sel = e.target.value; save(); render(); });
+$("msel").addEventListener("change", e => { useMonth(e.target.value); messages = []; save(); render(); });
+$("dbopen").addEventListener("click", dbOpen);
+$("dbnew").addEventListener("click", dbNew);
+document.addEventListener("click", e => { if (e.target.closest("[data-dbconnect]") && DB.h) dbAttach(DB.h, true); });
+(async () => { if (!DB.supported) return dbStatus(); const h = await kvGet("dbHandle"); if (h) await dbAttach(h, false); else dbStatus(); render(); })();
 $("main").addEventListener("click", e => {
   if (e.target.closest("[data-add]")) $("file").click();
   const r = e.target.closest(".pft tr[data-k]");
@@ -1168,7 +1259,7 @@ function buildCopy(){
   q("body").removeAttribute("class");
   const ck = q("#ckbtn"); if (ck) ck.remove();
   const sheet = q(".sheet"); if (sheet) sheet.style.zoom = "";
-  const data = Object.assign({}, state, { snap: "copy-" + Date.now() });
+  const data = Object.assign(JSON.parse(ser()), { snap: "copy-" + Date.now() });
   if (data.tab === "ck") data.tab = "pl";
   q("#embedded").textContent = JSON.stringify(data).replace(/</g, "\\u003c");
   return "<!DOCTYPE html>\n" + doc.outerHTML;
@@ -1332,7 +1423,7 @@ file.addEventListener("change", () => { loadFiles(file.files); file.value = ""; 
 ["dragover","dragenter"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); document.body.classList.add("dragging"); }));
 ["dragleave","drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); if (ev === "drop" || !e.relatedTarget) document.body.classList.remove("dragging"); }));
 document.addEventListener("drop", e => loadFiles(e.dataTransfer.files));
-$("clear").addEventListener("click", () => { if (confirm("Remove all loaded reports from this page?")){ state = { pl:{}, ex:{}, sel:null, tab:"pl", snap: state.snap }; messages = []; save(); render(); } });
+$("clear").addEventListener("click", () => { if (state.month && confirm("Delete all reports of " + monthLabel(state.month) + "? Other months are kept.")){ delete state.months[state.month]; useMonth(monthKeys().pop() || null); messages = []; save(); render(); } });
 render();
 </script>
 <script>

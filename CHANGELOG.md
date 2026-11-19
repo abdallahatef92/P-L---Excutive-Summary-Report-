@@ -3,6 +3,13 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.9.0 - 2026-11-19
+- Month history: every report is stored under the month of its report date; loading October no longer replaces September.
+- Month selector in the top bar; all tabs show the selected month.
+- Notice when a month is missing projects that were loaded the month before.
+- Data file: one local JSON file (Edit panel > New data file / Open data file) holds every month; the app reloads it on start and saves to it automatically. Browser storage stays as a backup.
+- Existing data is moved to its report month (Sep 2026) automatically. Clear all is now Delete this month. Saved copies include every month.
+
 ## 1.8.0 - 2026-11-16
 - P&L report: new % column with 15 ratios (budget split, actual vs EAC, BCWP vs budget, EAC split, CTC vs EAC, risk vs contract value), as defined in ratio colunms for P&L.xlsx.
 - Hover any % to see its formula and the two figures used.
