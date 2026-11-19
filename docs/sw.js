@@ -1,6 +1,6 @@
 // Keeps the app working offline once installed. Network first, so a new version
 // on GitHub Pages is picked up the next time the app opens with internet.
-const CACHE = "project-reports-1.9.1";
+const CACHE = "project-reports-1.10.0";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", e => {

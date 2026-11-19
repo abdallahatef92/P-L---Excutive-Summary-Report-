@@ -282,6 +282,32 @@ td.st.bad .pill{background:#fde3e3;color:#b71c1c}td.st.good .pill{background:#df
 .pfnote{width:0;min-width:100%;font-size:11.5px;color:#5b6577;margin-top:8px;line-height:1.4}
 @media screen{.sheet.pf{zoom:var(--sz,1);margin:0 auto}}
 @media print{.sheet.pf{width:max-content}.sheet.pf *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+/* ===== month comparison ===== */
+.vbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;font-family:"Segoe UI",Arial,sans-serif;font-size:13px}
+.vsw{display:inline-flex;border:1px solid #c3cde0;border-radius:7px;overflow:hidden}
+.vsw button{border:0;background:#fff;color:#0c1f5c;font:inherit;font-weight:600;padding:5px 13px;cursor:pointer}.vsw button+button{border-left:1px solid #c3cde0}
+.vsw button.on{background:#0c1f5c;color:#fff}.vsw button:not(.on):hover{background:#eef3fb}
+.cmpk{display:inline-flex;align-items:center;gap:7px;color:#5b6577}.cmpk select{font:inherit;font-weight:600;color:#0c1f5c;border:1px solid #c3cde0;border-radius:6px;padding:4px 6px;background:#eef3fb;cursor:pointer}
+.vnote{color:#8a93a3;font-style:italic}
+@media print{.vbar{display:none!important}}
+.vu,.sheet .pft td.vu{color:#1f7a4a}.vd,.sheet .pft td.vd{color:#c4352b}.vn,.sheet .pft td.vn{color:#5b6577}
+.sheet.pf .pft td.dl{font-weight:600}.sheet.pf .pft td.dl i,.sheet .plt td.dv i{font-style:normal;font-size:.68em;margin-right:4px;vertical-align:1px}
+.sheet.pf .pft td.dz,.sheet .plt td.dz{color:#b8bfcc;text-align:center}
+.sheet.pf.cmp .was{color:#8a93a3;font-size:.85em;margin-left:6px}.sheet.pf.cmp .hs{font-weight:400;opacity:.8}
+.sheet.pf.cmp td.stc .old{color:#8a93a3;text-decoration:line-through;font-size:.85em}
+.sheet.pf.cmp .pill.bad{background:#fde3e3;color:#b71c1c}.sheet.pf.cmp .pill.good{background:#dff3e4;color:#1b6e2f}
+.sheet.pf.cmp tr.nw td{color:#8a93a3}
+.pfins{width:0;min-width:100%;margin-top:12px;font-size:14px;background:#f4f7fc;border-radius:7px;padding:8px 12px;line-height:1.5}.pfins b{color:#0c1f5c}
+.pfins .tg{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:#fff!important;background:#3a6fc4;border-radius:3px;padding:1px 7px;margin-right:8px}
+.sheet .plt td.dv{text-align:right;font-weight:600;background:#fff;padding-right:6px;white-space:nowrap;font-size:13.5px;font-family:"Segoe UI",Arial,sans-serif}
+.sheet .plt td.dv.vu{color:#1f7a4a}.sheet .plt td.dv.vd{color:#c4352b}.sheet .plt td.dv.vn{color:#5b6577}
+.sheet .plt td.dv .pp{border-bottom:0}.sheet .plt td.dv.dz{text-align:center;color:#b8bfcc}
+.sheet .plt tr.hdr td.v{text-align:center}
+.sheet.plv .plt td.bv{color:#5b6577}.sheet.plv .plt tr.vb td.bv,.sheet.plv .plt tr.vl td.bv{color:#5b7fc4}
+.sheet.plv .plt tr.chg td:first-child{box-shadow:inset 4px 0 0 #3a6fc4}
+.sheet.plv .plt tr.st td.bv{color:#fff}.sheet.plv .plt td.bv.s2.bad{background:#e7958a}.sheet.plv .plt td.bv.s2.good{background:#8fcaa6}.sheet.plv .plt td.bv.s2.warn{background:#e8c27a}
+.vmiss{background:#fff4e0;border:1px solid #f0d49b;border-radius:6px;padding:6px 10px;margin:0 0 10px;font:13px "Segoe UI",Arial,sans-serif}
+.vleg{margin-top:10px;font:12px "Segoe UI",Arial,sans-serif;color:#5b6577}
 .sheet.ck .pfdate{font-family:"Times New Roman",Times,serif;font-size:15px;margin-bottom:8px}
 .sheet.ck .pft{border:2px solid #000;font-family:"Times New Roman",Times,serif;font-size:13.5px;border-collapse:collapse}
 .sheet.ck .pft td,.sheet.ck .pft th{border:1px solid #000;padding:4px 5px;line-height:1.2;white-space:nowrap}
@@ -345,7 +371,7 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.9.1 · 2026-11-19</span></div>
+  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.10.0 · 2026-11-19</span></div>
   <label class="psel msel"><span>Month</span><select id="msel"></select></label>
   <label class="psel"><span>Project</span><select id="psel"></select></label>
   <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button><button class="tab" data-t="an">Analysis</button></nav>
@@ -530,9 +556,27 @@ function useMonth(k){
 }
 const touch = () => { if (state.month && state.months[state.month]) state.months[state.month].upd = Date.now(); };
 const monthKeys = () => Object.keys(state.months).sort();
+const monthShort = k => { if (!k) return ""; const [y, m] = k.split("-"); return MON[+m - 1].replace(/^./, c => c.toUpperCase()) + "-" + y.slice(2); };
+// month to compare with: the user's pick, else the latest month before the shown one, else any other month
+function cmpMonth(){
+  const ks = monthKeys().filter(k => k !== state.month && Object.keys(state.months[k].pl || {}).length);
+  if (state.cmp && ks.includes(state.cmp)) return state.cmp;
+  return ks.filter(k => k < state.month).pop() || ks.pop() || null;
+}
+const cmpPicker = (k) => { const ks = monthKeys().filter(x => Object.keys(state.months[x].pl || {}).length);
+  const opt = (sel, skip) => ks.filter(x => x !== skip).slice().reverse().map(x => `<option value="${x}" ${x === sel ? "selected" : ""}>${monthLabel(x)}</option>`).join("");
+  return `<span class="cmpk"><select data-cmpa>${opt(state.month)}</select><span>compared with</span><select data-cmpb>${opt(k, state.month)}</select></span>`; };
+const vSwitch = (attr, cur, a, b) => `<span class="vsw">${[a, b].map(([v, t]) => `<button ${attr}="${v}" class="${cur === v ? "on" : ""}">${t}</button>`).join("")}</span>`;
+// variance cell: sense 1 = higher is better, -1 = higher is worse, 0 = neutral
+function dCell(v, sense, txt, x = ""){
+  if (v == null || !isFinite(v)) return `<td class="v ${x}"></td>`;
+  if (Math.abs(v) < 1e-9 || txt === "0" || /^0\.0+( pp)?$/.test(txt)) return `<td class="v dz ${x}">–</td>`;
+  const k = !sense ? "vn" : (v > 0) === (sense > 0) ? "vu" : "vd";
+  return `<td class="v dl ${k} ${x}"><i>${v > 0 ? "▲" : "▼"}</i>${txt}</td>`;
+}
 function adopt(d){
   d = d || {};
-  state = { months:{}, month:null, pl:{}, ex:{}, sel:d.sel || null, tab:d.tab || "pl", anb:d.anb, snap:d.snap };
+  state = { months:{}, month:null, pl:{}, ex:{}, sel:d.sel || null, tab:d.tab || "pl", anb:d.anb, snap:d.snap, pfv:d.pfv, plv:d.plv, cmp:d.cmp };
   if (d.months) state.months = d.months;
   else if (d.pl || d.ex){ // older single-month data: file it under its report month
     const k = Object.values(d.pl || {}).map(plMonth).filter(Boolean).sort().pop() || Object.values(d.ex || {}).map(exMonth).filter(Boolean).sort().pop() || monthKey(new Date().toDateString());
@@ -547,7 +591,7 @@ function adopt(d){
   const has = d => d && (d.months || (d.pl && d.ex));
   if (has(emb) && !(ls && ls.snap === emb.snap)) adopt(emb); else adopt(has(ls) ? ls : null);
 }
-const ser = () => JSON.stringify({ months:state.months, month:state.month, sel:state.sel, tab:state.tab, anb:state.anb, snap:state.snap });
+const ser = () => JSON.stringify({ months:state.months, month:state.month, sel:state.sel, tab:state.tab, anb:state.anb, snap:state.snap, pfv:state.pfv, plv:state.plv, cmp:state.cmp });
 const save = () => { try { localStorage.setItem(KEY, ser()); } catch(e){} dbSave(); };
 
 /* ---------- data file: one local JSON file holds every month ---------- */
@@ -920,7 +964,32 @@ function plPct(pl, r){
   const f = x => Math.round(x).toLocaleString("en-US");
   return `<span class="pp" data-tip="${esc(d[3] + "\n= " + f(v) + " ÷ " + f(den))}">${(v / den * 100).toFixed(1)}%</span>`;
 }
+const PL_GOOD = /(gross profit|profit variance|current cpi|project value|contract value)/i, PL_BAD = /^(actual|estimate at completion|cost to complete)/i;
+function plVarCell(label, a, b){
+  if (b == null) return `<td class="dv"></td>`;
+  if (/^(client|project name)$/i.test(label)) return `<td class="dv"></td>`;
+  const isD = v => /[a-z]{3}/i.test(v) && /\d{4}/.test(v) && !isNaN(new Date(v));
+  const x = isD(a) ? NaN : num(a), y = isD(b) ? NaN : num(b), tip = t =>` data-tip="${esc(label + "\n" + t)}"`;
+  if (isNaN(x) || isNaN(y)){
+    const da = new Date(a), db = new Date(b);
+    if (!isNaN(da) && !isNaN(db) && /\d{4}/.test(a) && /\d{4}/.test(b)){
+      const dd = Math.round((da - db) / 864e5); if (!dd || /^report date/i.test(label)) return `<td class="dv dz">${/^report date/i.test(label) ? "" : "–"}</td>`;
+      const k = /^expected finish/i.test(label) ? (dd > 0 ? "vd" : "vu") : "vn";
+      return `<td class="dv ${k}"><span class="pp"${tip("moved " + Math.abs(dd) + " days " + (dd > 0 ? "later" : "earlier"))}><i>${dd > 0 ? "▲" : "▼"}</i>${Math.abs(dd)} days</span></td>`;
+    }
+    return a === b ? `<td class="dv dz">–</td>` : `<td class="dv vn">changed</td>`;
+  }
+  const v = x - y, pc = /%/.test(a), small = !pc && Math.abs(y) < 100 && /\./.test(String(a));
+  const t = pc ? Math.abs(v).toFixed(2) + " pp" : small ? Math.abs(v).toFixed(2) : Math.round(Math.abs(v)).toLocaleString("en-US");
+  if (/^0(\.0+)?( pp)?$/.test(t)) return `<td class="dv dz">–</td>`;
+  const sense = PL_GOOD.test(label) ? 1 : PL_BAD.test(label) ? -1 : 0, k = !sense ? "vn" : (v > 0) === (sense > 0) ? "vu" : "vd";
+  return `<td class="dv ${k}"><span class="pp"${tip(monthShort(state.month) + ": " + a + "\n" + monthShort(cmpMonth()) + ": " + b + "\n" + (v > 0 ? "▲ +" : "▼ −") + t + (k === "vu" ? " (better)" : k === "vd" ? " (worse)" : ""))}><i>${v > 0 ? "▲" : "▼"}</i>${t}</span></td>`;
+}
 function renderPL(pl){
+  const ck = cmpMonth(), vm = state.plv === "var" && ck, bpl = vm ? (state.months[ck].pl || {})[pl.name] : null;
+  const bget = r => bpl ? (bpl.rows.find(x => x.label === r.label) || {}).value : null;
+  const tbar = `<div class="vbar">${vSwitch("data-plv", vm ? "var" : "rep", ["rep", "Report"], ["var", ck ? "Variance vs " + monthLabel(ck) : "Variance"])}${vm ? cmpPicker(ck) : ck ? "" : `<span class="vnote">Load another month to see variances</span>`}</div>`;
+  if (vm) return renderPLV(pl, bpl, bget, tbar, ck);
   const si = pl.rows.findIndex(r => /^expected project status/i.test(r.label));
   const main = si < 0 ? pl.rows : pl.rows.slice(0, si), tail = si < 0 ? [] : pl.rows.slice(si);
   const row = r => {
@@ -930,10 +999,31 @@ function renderPL(pl){
   const trow = r => /^expected project status/i.test(r.label)
     ? `<tr class="st ${statusKind(r.value)}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="p"></td></tr>`
     : `<tr class="vk"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="p"></td></tr>`;
-  return `<div class="sheet pl">
+  return `<div class="sheet pl">${tbar}
     <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Project P&amp;L Report</div>${LOGO}</div>
     <table class="plt"><colgroup><col style="width:61%"><col style="width:27%"><col></colgroup>${main.map(row).join("")}</table>
     ${tail.length ? `<table class="plt plt2"><colgroup><col style="width:61%"><col style="width:27%"><col></colgroup>${tail.map(trow).join("")}</table>` : ""}
+  </div>`;
+}
+
+function renderPLV(pl, bpl, bget, tbar, ck){
+  const rows = pl.rows, si = rows.findIndex(r => /^expected project status/i.test(r.label));
+  const row = r => {
+    const c = (PL_STYLE.find(s => s[0].test(r.label)) || [0, ""])[1];
+    if (/hdr/.test(c)) return `<tr class="${c}"><td>${esc(r.label)}</td><td class="v">${monthShort(state.month)}</td><td class="v">${monthShort(ck)}</td><td class="v">Variance</td></tr>`;
+    const b = bget(r), cell = plVarCell(r.label, r.value, b);
+    return `<tr class="${c}${/dv (vu|vd|vn)/.test(cell) ? " chg" : ""}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="v bv">${b == null ? (bpl ? "" : "–") : esc(b)}</td>${cell}</tr>`;
+  };
+  const main = si < 0 ? rows : rows.slice(0, si), tail = si < 0 ? [] : rows.slice(si);
+  const trow = r => { const b = bget(r), st = /^expected project status/i.test(r.label);
+    return `<tr class="${st ? "st " + statusKind(r.value) : "vk"}${b != null && b !== r.value ? " chg" : ""}"><td>${esc(r.label)}</td><td class="v">${esc(r.value)}</td><td class="v bv ${st && b ? "s2 " + statusKind(b) : ""}">${esc(b ?? "")}</td><td class="dv ${b != null && b !== r.value ? "vn" : "dz"}">${b == null ? "" : b !== r.value ? "changed" : "–"}</td></tr>`; };
+  const cg = `<colgroup><col style="width:43%"><col style="width:18.5%"><col style="width:18.5%"><col></colgroup>`;
+  return `<div class="sheet pl plv">${tbar}
+    <div class="shead"><div class="co">Company :ALSHOROUK<br>Department : Cost Control Dep.</div><div class="ttl">Project P&amp;L Report</div>${LOGO}</div>
+    ${bpl ? "" : `<div class="vmiss">${esc(pl.name)} is not loaded in ${monthLabel(ck)} – nothing to compare.</div>`}
+    <table class="plt">${cg}${main.map(row).join("")}</table>
+    ${tail.length ? `<table class="plt plt2">${cg}${tail.map(trow).join("")}</table>` : ""}
+    <div class="vleg">Variance = ${monthShort(state.month)} − ${monthShort(ck)} · <span class="vu">▲▼ green</span> better · <span class="vd">▲▼ red</span> worse · <span class="vn">grey</span> neutral (budget, BCWP, EV, progress) · % rows in percentage points (pp)</div>
   </div>`;
 }
 
@@ -1009,7 +1099,73 @@ function renderEX(ex, ps){
   return html;
 }
 
+function renderPFC(ps, ck){
+  const n = v => { const x = num(v); return isNaN(x) ? null : x; };
+  const mm = v => Math.abs(v / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
+  const fmt = v => v == null ? "" : v < 0 && mm(v) !== "0.00M" ? `<span class="negv">(${mm(v)})</span>` : mm(v);
+  const M = (v, x = "") => `<td class="v ${x}"${v == null ? "" : ` data-r="${Math.round(v)}"`}>${fmt(v)}</td>`;
+  const DM = (v, sense, x = "") => v == null ? `<td class="v ${x}"></td>` : dCell(v, sense, mm(v), x).replace("<td ", `<td data-r="${Math.round(v)}" data-f='"▲ "#,##0;"▼ "#,##0;"–"' `);
+  const A = state.month, base = state.months[ck].pl || {}, sA = monthShort(A), sB = monthShort(ck);
+  const pr = v => { const x = n(v); return x == null ? null : x <= 1.5 ? x * 100 : x; }, cp = v => { const x = n(v); return x == null ? null : x > 3 ? x / 100 : x; };
+  const get = pl => { const g = re => n(plGet(pl, re)); return { gp: g(/^eac gross profit$/i), eac: g(/^estimate at completion \(eac\) - /i), vac: g(/^profit variance in current budget/i),
+    ac: g(/^actual cost \(pc\)/i), bcwp: g(/^bcwp/i), prog: pr(plGet(pl, /^progress till/i)), cpi: cp(plGet(pl, /^current cpi/i)), st: plGet(pl, /^expected project status/i) || "" }; };
+  const L = ps.filter(p => p.pl).map(p => { const b = base[p.pl.name]; const a = get(p.pl), o = b ? get(b) : null;
+    return { p, a, o, gpd: o && a.gp != null && o.gp != null ? a.gp - o.gp : null }; });
+  L.sort((x, y) => (x.gpd == null) - (y.gpd == null) || (x.gpd ?? 0) - (y.gpd ?? 0));
+  const both = L.filter(r => r.o), T = { ga:0, gb:0, eac:0, vac:0, ac:0, ea:0, va:0, bcwpA:0, acA:0, bcwpB:0, acB:0 };
+  const dd = (a, b) => a == null || b == null ? null : a - b;
+  both.forEach(({ a, o }) => { T.ga += a.gp || 0; T.gb += o.gp || 0; T.eac += dd(a.eac, o.eac) || 0; T.vac += dd(a.vac, o.vac) || 0; T.ac += dd(a.ac, o.ac) || 0;
+    T.ea += a.eac || 0; T.va += a.vac || 0; T.bcwpA += a.bcwp || 0; T.acA += a.ac || 0; T.bcwpB += o.bcwp || 0; T.acB += o.ac || 0; });
+  const chip = v => v == null ? "" : `<span class="chip ${cpiKind(v)}">${v.toFixed(2)}</span>`;
+  const stp = t => `<span class="pill ${statusKind(t)}">${esc(t)}</span>`;
+  let nch = 0, nover = 0;
+  const rows = L.map(({ p, a, o, gpd }, i) => {
+    if (!o) return `<tr data-k="${esc(p.key)}" class="nw"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td><td class="v sep">–</td>${M(a.gp, "b")}<td class="v c" colspan="4">not loaded in ${monthLabel(ck)}</td>
+      <td class="v sep">${a.prog == null ? "" : a.prog.toFixed(1) + "%"}</td><td></td><td class="c sep">${chip(a.cpi)}</td><td class="c sep">${a.st ? stp(a.st) : ""}</td></tr>`;
+    const ch = o.st && a.st && o.st !== a.st; if (ch){ nch++; if (/over/i.test(a.st)) nover++; }
+    const dp = dd(a.prog, o.prog), dc = dd(a.cpi, o.cpi);
+    return `<tr data-k="${esc(p.key)}"><td class="c">${i + 1}</td><td class="pn">${esc(p.name)}</td>
+      ${M(o.gp, "sep")}${M(a.gp, "b")}${DM(gpd, 1)}
+      ${DM(dd(a.eac, o.eac), -1, "sep")}${DM(dd(a.vac, o.vac), 1)}${DM(dd(a.ac, o.ac), 0)}
+      <td class="v sep">${o.prog == null ? "" : o.prog.toFixed(1) + "%"} → <b>${a.prog == null ? "" : a.prog.toFixed(1) + "%"}</b></td>${dp == null ? "<td></td>" : dCell(dp, 0, Math.abs(dp).toFixed(1) + " pp")}
+      <td class="c sep">${chip(a.cpi)}${o.cpi == null ? "" : `<span class="was"> (${o.cpi.toFixed(2)})</span>`}</td>
+      <td class="c sep stc">${ch ? `<span class="old">${esc(o.st)}</span> → ${stp(a.st)}` : a.st ? stp(a.st) : ""}</td></tr>`;
+  }).join("");
+  const cpiA = T.acA ? T.bcwpA / T.acA : null, cpiB = T.acB ? T.bcwpB / T.acB : null, gpd = T.ga - T.gb;
+  const tot = both.length ? `<tr class="tot"><td></td><td class="pn">Total (${both.length} project${both.length > 1 ? "s" : ""}${both.length < L.length ? " in both months" : ""})</td>
+      ${M(T.gb, "sep")}${M(T.ga)}${DM(gpd, 1)}${DM(T.eac, -1, "sep")}${DM(T.vac, 1)}${DM(T.ac, 0)}<td class="sep"></td><td></td>
+      <td class="c sep">${cpiA == null ? "" : cpiA.toFixed(2)}${cpiB == null ? "" : `<span class="was"> (${cpiB.toFixed(2)})</span>`}</td><td class="c sep">${nch ? nch + " changed" : "no change"}</td></tr>` : "";
+  const arrow = (v, sense) => v == null || Math.abs(v) < 5e3 ? `<span class="vn">no change</span>` : `<span class="${!sense ? "vn" : (v > 0) === (sense > 0) ? "vu" : "vd"}">${v > 0 ? "▲" : "▼"} ${mm(v)}</span>`;
+  const card = (l, v, sub, k = "") => `<div class="kc ${k}"><div class="l">${l}</div><div class="kv">${v}</div><div class="s">${sub}</div></div>`;
+  const kpis = both.length ? `<div class="pfk">
+      ${card("EAC Gross Profit", fmt(T.ga), arrow(gpd, 1) + ` vs ${sB}`, T.ga < 0 ? "bad" : "good")}
+      ${card("EAC excl. Spons.", fmt(T.ea), arrow(T.eac, -1) + ` vs ${sB}`)}
+      ${card("VAC", fmt(T.va), arrow(T.vac, 1) + ` vs ${sB}`, T.va < 0 ? "bad" : "good")}
+      ${card("Actual cost added", fmt(T.ac), `between ${sB} and ${sA}`)}
+      ${card("Portfolio CPI", cpiA == null ? "" : cpiA.toFixed(2), cpiA == null || cpiB == null ? "" : (Math.abs(cpiA - cpiB) < 0.005 ? `<span class="vn">no change</span>` : `<span class="${cpiA > cpiB ? "vu" : "vd"}">${cpiA > cpiB ? "▲" : "▼"} ${Math.abs(cpiA - cpiB).toFixed(2)}</span>`) + ` vs ${cpiB.toFixed(2)}`, cpiA < 1 ? "bad" : "good")}
+      ${card("Status changes", nch, nch ? (nover ? `<span class="vd">${nover} turned Over-Budget</span>` : `<span class="vu">all improved</span>`) : `vs ${sB}`, nover ? "bad" : "")}
+    </div>` : "";
+  const lose = both.filter(r => r.gpd < -5e3), gain = both.filter(r => r.gpd > 5e3).sort((x, y) => y.gpd - x.gpd);
+  const ins = both.length ? `<div class="pfins"><b class="tg">What moved</b>` + (lose.length ? `Biggest profit drop: ${anB(lose.slice(0, 3).map(r => r.p.name + " (" + mm(-r.gpd) + ")"))}. ` : "No project lost profit. ")
+    + (gain.length ? `Biggest improvement: ${anB(gain.slice(0, 2).map(r => r.p.name + " (+" + mm(r.gpd) + ")"))}.` : "")
+    + (() => { const miss = Object.keys(base).filter(nm => !L.find(r => r.p.pl.name === nm)); return miss.length ? ` Not loaded in ${monthLabel(A)}: ${anB(miss)}.` : ""; })() + `</div>` : "";
+  return `<div class="sheetwrap"><div class="sheet pf cmp">
+    <div class="vbar">${vSwitch("data-pfv", "cmp", ["sum", "Summary"], ["cmp", "Month comparison"])}${cmpPicker(ck)}</div>
+    <div class="pfhead"><div><div class="co">ALSHOROUK · Cost Control Dep.</div><div class="ttl">Portfolio Month Comparison</div></div>
+      <div class="pfr"><div class="pfdate">Comparing<br><b>${monthLabel(A)} vs ${monthLabel(ck)}</b><br><span class="pfunit">Amounts in EGP (M = millions)</span></div>${LOGO}</div></div>
+    ${kpis}
+    <table class="pft">
+      <tr class="hd grp"><th colspan="2">Project</th><th colspan="3" class="sep">EAC Gross Profit</th><th colspan="3" class="sep">Change ${sB} → ${sA}</th><th colspan="2" class="sep">Progress</th><th class="sep">CPI</th><th class="sep">Status @ Completion</th></tr>
+      <tr class="hd"><th>#</th><th>Project</th><th class="sep">${sB}</th><th>${sA}</th><th>Change</th><th class="sep">EAC<br>change</th><th>VAC<br>change</th><th>Actual cost<br>added</th><th class="sep">${sB} → ${sA}</th><th>Change</th><th class="sep">${sA} <span class="hs">(${sB})</span></th><th class="sep">${sB} → ${sA}</th></tr>
+      ${rows}${tot}
+    </table>
+    ${ins}
+    <div class="pflegend">Change = ${sA} − ${sB} · <span class="vu"><b>▲▼ green</b></span> better for the company · <span class="vd"><b>▲▼ red</b></span> worse (a higher EAC is red) · grey = neutral · sorted by profit change, biggest drop first</div>
+  </div></div>`;
+}
 function renderPF(ps){
+  const ck0 = cmpMonth();
+  if (state.pfv === "cmp" && ck0) return renderPFC(ps, ck0);
   const n = v => { const x = num(v); return isNaN(x) ? null : x; };
   const fmt = v => { if (v == null) return ""; const t = Math.abs(v / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M"; return v < 0 && t !== "0.00M" ? `<span class="negv">(${t})</span>` : t; };
   const M = (v, x = "") => `<td class="v ${x} ${cls(v)}"${v == null ? "" : ` data-r="${Math.round(v)}"`}>${fmt(v)}</td>`;
@@ -1059,6 +1215,7 @@ function renderPF(ps){
       ${card("Portfolio CPI", tcpi, `${over} of ${T.k} over budget`, tcpi && +tcpi < 1 ? "bad" : "good")}
     </div>` : "";
   return `<div class="sheetwrap"><div class="sheet pf">
+    <div class="vbar">${vSwitch("data-pfv", "sum", ["sum", "Summary"], ["cmp", ck0 ? "Month comparison" : "Month comparison (load another month)"])}</div>
     <div class="pfhead"><div><div class="co">ALSHOROUK · Cost Control Dep.</div><div class="ttl">Portfolio Summary</div></div>
       <div class="pfr"><div class="pfdate">${latest ? "Report Date<br><b>" + esc(latest) + "</b><br>" : ""}<span class="pfunit">Amounts in EGP (M = millions)</span></div>${LOGO}</div></div>
     ${kpis}
@@ -1199,7 +1356,8 @@ function renderInner(){
     return;
   }
   if (p && state.tab === "pf"){
-    document.title = safe("Portfolio Summary" + (Object.values(state.pl)[0] ? " - " + Object.values(state.pl).map(x => x.date).sort((a, b) => new Date(b) - new Date(a))[0] : ""));
+    const ckT = state.pfv === "cmp" && cmpMonth();
+    document.title = ckT ? safe("Portfolio Month Comparison - " + monthLabel(state.month) + " vs " + monthLabel(ckT)) : safe("Portfolio Summary" + (Object.values(state.pl)[0] ? " - " + Object.values(state.pl).map(x => x.date).sort((a, b) => new Date(b) - new Date(a))[0] : ""));
     $("main").innerHTML = msgs + renderPF(ps);
     return;
   }
@@ -1389,7 +1547,11 @@ $("plist").addEventListener("click", e => {
     return;
   }
   const el = e.target.closest(".pitem"); if (el){ state.sel = el.dataset.k; save(); render(); } });
-$("main").addEventListener("change", e => { if (e.target.matches("[data-anb]")){ state.anb = e.target.value; save(); render(); } });
+$("main").addEventListener("change", e => { if (e.target.matches("[data-anb]")){ state.anb = e.target.value; save(); render(); }
+  if (e.target.matches("[data-cmpa]")){ useMonth(e.target.value); messages = []; infos = []; save(); render(); }
+  if (e.target.matches("[data-cmpb]")){ state.cmp = e.target.value; save(); render(); } });
+$("main").addEventListener("click", e => { const b = e.target.closest("[data-pfv],[data-plv]"); if (!b) return;
+  if (b.dataset.pfv) state.pfv = b.dataset.pfv; else state.plv = b.dataset.plv; save(); render(); });
 $("main").addEventListener("click", e => { const b = e.target.closest("[data-anp]"); if (b){ state.anp = +b.dataset.anp; save(); render(); } });
 document.querySelector(".topbar").addEventListener("click", e => { const t = e.target.closest(".tab"); if (t){ state.tab = t.dataset.t; save(); render(); } });
 $("psel").addEventListener("change", e => { state.sel = e.target.value; save(); render(); });
@@ -1456,7 +1618,7 @@ async function exportExcel(){
   ws.mergeCells(4, 1, 4, ncol);
   Object.assign(ws.getCell(4, 1), { value: title, font: { name: "Arial", bold: true, size: 16 }, alignment: { horizontal: "center", vertical: "middle" } });
   ws.getRow(4).height = 30;
-  const sub = sheet.querySelector(".pfdate"); const sb = sub && sub.querySelector("b"); ws.getCell(5, 1).value = !sub ? "" : isCk || !sb ? sub.innerText.trim() : "Report Date: " + sb.innerText.trim();
+  const sub = sheet.querySelector(".pfdate"); const sb = sub && sub.querySelector("b"); ws.getCell(5, 1).value = !sub ? "" : isCk || !sb ? sub.innerText.trim() : (sheet.classList.contains("cmp") ? "Comparing: " : "Report Date: ") + sb.innerText.trim();
   ws.getCell(5, 1).font = { name: TNR, size: 12, bold: true };
   const img = sheet.querySelector(".logo img");
   if (img){ const id = wb.addImage({ base64: img.src, extension: "jpeg" }); ws.addImage(id, { tl: { col: ncol - 2, row: 0 }, ext: { width: 130, height: 58 } }); }
@@ -1476,7 +1638,7 @@ async function exportExcel(){
         val = { richText: [{ text: main, font: { name: TNR, bold: true, size: 11 } }, { text: "\n" + small.innerText.trim(), font: { name: "Arial", size: 8, color: { argb: "FF555555" } } }] };
         lines = 2; text = main;
       } else if (!hd && td.dataset.r){
-        val = +td.dataset.r; fmt = "#,##0;[Red](#,##0)"; text = "(" + Math.abs(val).toLocaleString("en-US") + ")";
+        val = +td.dataset.r; fmt = td.dataset.f || "#,##0;[Red](#,##0)"; text = (td.dataset.f ? "▲ " : "(") + Math.abs(val).toLocaleString("en-US") + ")";
       } else if (!hd){
         const m = text.match(/^(\()?(-)?([\d,]+(?:\.(\d+))?)(%|M)?\)?$/);
         if (m && /\d/.test(m[3])){
@@ -1496,8 +1658,8 @@ async function exportExcel(){
       if (!isCk){
         const navy = { style: "medium", color: { argb: "FF0C1F5C" } }, sep = k.contains("sep") ? { style: "medium", color: { argb: "FFC9D0DC" } } : lite;
         cell.border = hd ? { top: lite, left: lite, bottom: lite, right: lite } : { top: tot ? navy : lite, bottom: tot ? navy : lite, left: sep, right: lite };
-        if (!hd && !tot) cell.font.color = { argb: k.contains("neg") ? "FFC62828" : k.contains("st") ? "FFFFFFFF" : k.contains("pn") ? "FF0C1F5C" : k.contains("cl") ? "FF5B6577" : "FF1D2433" };
-        if (tot) cell.font.color = { argb: k.contains("neg") ? "FFC62828" : "FF0C1F5C" };
+        if (!hd && !tot) cell.font.color = { argb: k.contains("vu") ? "FF1F7A4A" : k.contains("vd") ? "FFC4352B" : k.contains("vn") ? "FF5B6577" : k.contains("dz") ? "FFB8BFCC" : k.contains("neg") ? "FFC62828" : k.contains("st") ? "FFFFFFFF" : k.contains("pn") ? "FF0C1F5C" : k.contains("cl") ? "FF5B6577" : "FF1D2433" };
+        if (tot) cell.font.color = { argb: k.contains("vu") ? "FF1F7A4A" : k.contains("vd") ? "FFC4352B" : k.contains("neg") ? "FFC62828" : "FF0C1F5C" };
         const pf = hd ? (grp ? "0C1F5C" : "2F4A8A") : tot ? "E8ECF3" : k.contains("bad") ? "D0432A" : k.contains("good") ? "2E9E5B" : k.contains("warn") ? "D99A1C" : di % 2 ? "F4F5F7" : null;
         if (pf) cell.fill = fill(pf);
         if (k.contains("pg")) pgCells.push(cell.address);

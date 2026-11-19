@@ -3,6 +3,11 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.10.0 – 2026-11-19
+- Portfolio: new **Month comparison** view (switch at the top of the sheet). Pick any two registered months: EAC GP before/after and change, EAC / VAC change, actual cost added, progress, CPI and status changes, KPI cards with change, "What moved" note. Sorted by profit change.
+- P&L: new **Variance** view next to the normal report – previous month column and variance (arrows: green better, red worse, grey neutral; % rows in pp; date rows in days; hover for details).
+- Excel export of the comparison keeps full numbers with ▲/▼ formats and colours; file name names both months.
+
 ## 1.9.1 – 2026-11-19
 - Edit panel: **Export JSON** downloads every month as one JSON file (works in any browser).
 - **Import JSON…** merges a JSON export (or an older single-month copy) back in; per month the newer copy wins.
