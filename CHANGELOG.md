@@ -3,6 +3,10 @@
 The version shows in the app's top bar (next to "Project Reports"), with the build date.
 To release: bump `version` in `package.json`, run `npm run build`, add a line here, commit and push.
 
+## 1.9.1 – 2026-11-19
+- Edit panel: **Export JSON** downloads every month as one JSON file (works in any browser).
+- **Import JSON…** merges a JSON export (or an older single-month copy) back in; per month the newer copy wins.
+
 ## 1.9.0 - 2026-11-19
 - Month history: every report is stored under the month of its report date; loading October no longer replaces September.
 - Month selector in the top bar; all tabs show the selected month.

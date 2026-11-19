@@ -345,7 +345,7 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.9.0 · 2026-11-19</span></div>
+  <div class="brand">Project Reports <span class="ver" title="App version and build date">v1.9.1 · 2026-11-19</span></div>
   <label class="psel msel"><span>Month</span><select id="msel"></select></label>
   <label class="psel"><span>Project</span><select id="psel"></select></label>
   <nav class="ttabs"><button class="tab" data-t="pl">P&amp;L Report</button><button class="tab" data-t="ex">Executive Summary</button><button class="tab" data-t="pf">Portfolio</button><button class="tab" data-t="an">Analysis</button></nav>
@@ -364,7 +364,9 @@ table.anmx tr.tot td{border-top:2px solid #0c1f5c;font-weight:700}
   <div class="plist" id="plist"></div>
   <button class="ckbtn" id="ckbtn" hidden>Check P&amp;L vs Executive Summary</button>
   <div class="dbbox"><div class="plabel">Data file</div><div id="dbstat" class="dbstat"></div>
-    <div class="dbbtns"><button class="btn" id="dbopen" hidden>Open data file…</button><button class="btn" id="dbnew" hidden>New data file…</button></div></div>
+    <div class="dbbtns"><button class="btn" id="dbopen" hidden>Open data file…</button><button class="btn" id="dbnew" hidden>New data file…</button></div>
+    <div class="dbbtns"><button class="btn" id="jsonout">Export JSON</button><button class="btn" id="jsonin">Import JSON…</button></div>
+    <input type="file" id="jsonfile" accept="application/json,.json" hidden></div>
   <div class="side-foot"><button class="btn" id="clear" hidden>Delete this month</button></div>
 </aside>
 <main id="main"></main>
@@ -509,7 +511,7 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
 "use strict";
 const KEY = "projectReports.v1";
 let state = { months:{}, month:null, pl:{}, ex:{}, sel:null, tab:"pl" };
-let messages = [];
+let messages = [], infos = [];
 /* ---------- months: every report is stored under the month of its report date ---------- */
 const MON = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
 function monthKey(v){
@@ -568,14 +570,38 @@ async function dbAttach(h, ask){
   if (DB.ok){
     try {
       const txt = (await (await h.getFile()).text()).trim(), d = txt ? JSON.parse(txt) : null;
-      if (d && d.months) for (const [k, v] of Object.entries(d.months)){ const mine = state.months[k]; if (!mine || (v.upd || 0) >= (mine.upd || 0)) state.months[k] = v; }
-      const keep = state.month; useMonth(keep && state.months[keep] ? keep : monthKeys().pop() || null);
+      mergeMonths(d);
       try { localStorage.setItem(KEY, ser()); } catch(e){}
       await dbWriteNow();
     } catch(e){ DB.err = "Could not read the data file: " + (e.message || e); }
     render();
   }
   dbStatus();
+}
+// merge months from another copy (data file or JSON export): per month, the newer one wins
+function mergeMonths(d){
+  if (!d) return [];
+  let ms = d.months;
+  if (!ms && (d.pl || d.ex)){ const cur = state; adopt(d); ms = state.months; state = cur; }
+  const got = [];
+  for (const [k, v] of Object.entries(ms || {})){ const mine = state.months[k]; if (!mine || (v.upd || 0) >= (mine.upd || 0)){ state.months[k] = v; got.push(k); } }
+  const keep = state.month; useMonth(keep && state.months[keep] ? keep : monthKeys().pop() || null);
+  return got;
+}
+function jsonExport(){
+  const d = new Date(), z = n => String(n).padStart(2, "0");
+  const blob = new Blob([JSON.stringify({ app:"Project Reports", format:1, saved:d.toISOString(), months:state.months }, null, 1)], { type:"application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = `Project Reports Data ${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+async function jsonImport(f){
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d || !(d.months || d.pl || d.ex)) throw new Error("this is not a Project Reports data file");
+    const got = mergeMonths(d); save(); render();
+    infos = [got.length ? `Imported ${got.map(monthLabel).join(", ")} from ${f.name}.` : `Nothing new in ${f.name} – your months are already up to date.`]; render();
+  } catch(e){ alert("Could not import the JSON file: " + (e.message || e)); }
 }
 function dbStatus(){
   const el = $("dbstat"); if (!el) return;
@@ -767,7 +793,7 @@ function parseEX(rawItems){
 
 /* ---------- loading ---------- */
 async function loadBuffers(files){
-  messages = [];
+  messages = []; infos = [];
   for (const f of files){
     try {
       const items = await extractItems(f.buf);
@@ -1156,7 +1182,7 @@ function renderInner(){
   const notes = [], i = keys.indexOf(state.month), prev = i > 0 ? state.months[keys[i - 1]] : null;
   if (prev){ const miss = Object.keys(prev.pl).filter(n => !state.pl[n]); if (miss.length) notes.push(`${monthLabel(state.month)}: ${Object.keys(state.pl).length} of ${Object.keys(state.pl).length + miss.length} projects loaded – missing ${miss.join(", ")} (loaded in ${monthLabel(keys[i - 1])}).`); }
   const dbNote = DB.h && !DB.ok ? `<div class="msg info">Data file <b>${esc(DB.h.name)}</b> needs your permission to reconnect.<button class="btn" data-dbconnect>Reconnect</button></div>` : "";
-  const msgs = messages.length || notes.length || dbNote ? `<div class="msgs">${dbNote}${notes.map(m => `<div class="msg info">${esc(m)}</div>`).join("")}${messages.map(m => `<div class="msg">${esc(m)}</div>`).join("")}</div>` : "";
+  const msgs = messages.length || notes.length || infos.length || dbNote ? `<div class="msgs">${dbNote}${infos.map(m => `<div class="msg info">${esc(m)}</div>`).join("")}${notes.map(m => `<div class="msg info">${esc(m)}</div>`).join("")}${messages.map(m => `<div class="msg">${esc(m)}</div>`).join("")}</div>` : "";
   const p = ps.find(p => p.key === state.sel);
   // the browser uses the page title as the default file name when saving as PDF
   const safe = s => String(s).replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim();
@@ -1367,9 +1393,12 @@ $("main").addEventListener("change", e => { if (e.target.matches("[data-anb]")){
 $("main").addEventListener("click", e => { const b = e.target.closest("[data-anp]"); if (b){ state.anp = +b.dataset.anp; save(); render(); } });
 document.querySelector(".topbar").addEventListener("click", e => { const t = e.target.closest(".tab"); if (t){ state.tab = t.dataset.t; save(); render(); } });
 $("psel").addEventListener("change", e => { state.sel = e.target.value; save(); render(); });
-$("msel").addEventListener("change", e => { useMonth(e.target.value); messages = []; save(); render(); });
+$("msel").addEventListener("change", e => { useMonth(e.target.value); messages = []; infos = []; save(); render(); });
 $("dbopen").addEventListener("click", dbOpen);
 $("dbnew").addEventListener("click", dbNew);
+$("jsonout").addEventListener("click", jsonExport);
+$("jsonin").addEventListener("click", () => $("jsonfile").click());
+$("jsonfile").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) jsonImport(f); });
 document.addEventListener("click", e => { if (e.target.closest("[data-dbconnect]") && DB.h) dbAttach(DB.h, true); });
 (async () => { if (!DB.supported) return dbStatus(); const h = await kvGet("dbHandle"); if (h) await dbAttach(h, false); else dbStatus(); render(); })();
 $("main").addEventListener("click", e => {
@@ -1554,7 +1583,7 @@ file.addEventListener("change", () => { loadFiles(file.files); file.value = ""; 
 ["dragover","dragenter"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); document.body.classList.add("dragging"); }));
 ["dragleave","drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); if (ev === "drop" || !e.relatedTarget) document.body.classList.remove("dragging"); }));
 document.addEventListener("drop", e => loadFiles(e.dataTransfer.files));
-$("clear").addEventListener("click", () => { if (state.month && confirm("Delete all reports of " + monthLabel(state.month) + "? Other months are kept.")){ delete state.months[state.month]; useMonth(monthKeys().pop() || null); messages = []; save(); render(); } });
+$("clear").addEventListener("click", () => { if (state.month && confirm("Delete all reports of " + monthLabel(state.month) + "? Other months are kept.")){ delete state.months[state.month]; useMonth(monthKeys().pop() || null); messages = []; infos = []; save(); render(); } });
 render();
 </script>
 <script>
